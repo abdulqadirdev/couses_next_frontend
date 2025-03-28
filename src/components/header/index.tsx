@@ -1,5 +1,6 @@
 "use client";
 
+import useStore from "@/stores/get-user";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
@@ -7,6 +8,13 @@ const Header = (): React.ReactNode => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [activeSection, setActiveSection] = useState<string>("home");
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
+
+  const { fetchUser, user } = useStore();
+  console.log(user);
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,7 +47,6 @@ const Header = (): React.ReactNode => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
 
   return (
     <header
@@ -124,18 +131,30 @@ const Header = (): React.ReactNode => {
         </nav>
 
         <div className="flex items-center gap-4">
-          <Link
-            href="/login"
-            className="hidden sm:block text-sm font-medium text-gray-300 transition-colors hover:text-purple-400"
-          >
-            Log in
-          </Link>
-          <Link
-            href="/signup"
-            className="rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-all duration-300 transform hover:scale-105"
-          >
-            Sign Up Free
-          </Link>
+          {!user ? (
+            <div>
+              <Link
+                href="/login"
+                className="hidden sm:block text-sm font-medium text-gray-300 transition-colors hover:text-purple-400"
+              >
+                Log in
+              </Link>
+              <Link
+                href="/signup"
+                className="rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-all duration-300 transform hover:scale-105"
+              >
+                Sign Up Free
+              </Link>
+            </div>
+          ) : (
+            <button
+              className="px-4 py-2 cursor-pointer bg-red-500 text-white font-medium rounded shadow-md 
+             hover:bg-red-700 transition duration-300 ease-in-out 
+             focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            >
+              Logout
+            </button>
+          )}
           <button
             className="md:hidden rounded-md p-2 text-gray-300 hover:bg-gray-800 hover:text-white"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
