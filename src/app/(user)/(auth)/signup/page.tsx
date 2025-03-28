@@ -10,7 +10,7 @@ type FormData = {
   password: string;
 };
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
   const {
     register,
