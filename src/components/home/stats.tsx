@@ -1,5 +1,10 @@
 const Stats = () => {
-  const stats = [
+  interface Stat {
+    label: string;
+    value: string;
+  }
+
+  const stats: Stat[] = [
     { label: "Courses", value: "500+" },
     { label: "Students", value: "100,000+" },
     { label: "Instructors", value: "50+" },

@@ -1,73 +1,116 @@
-"use client";
+"use client"
 
-import { error } from "console";
+import { Mail, Lock, BookOpen, ChevronRight, User } from "lucide-react"
 
 function SignUp(props: any) {
+  const { handleSubmit, onSubmit, register, errors } = props
 
-    const { handleSubmit, onSubmit, register , errors } = props;
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#111827] bg-gradient-to-br from-[#111827] to-[#1a1f35] p-4">
+      {/* Decorative elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-10 left-10 w-64 h-64 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+        <div className="absolute top-[60%] right-10 w-72 h-72 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-10 left-1/3 w-80 h-80 bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
+      </div>
 
-    return (
-        <form  onSubmit={handleSubmit(onSubmit)}> 
-            <div className="flex min-h-screen items-center justify-center">
-            <div className="relative flex flex-col rounded-xl bg-transparent bg-clip-border text-gray-700 shadow-none">
-                <h4 className="block font-sans text-2xl font-semibold leading-snug tracking-normal text-blue-gray-900 antialiased dark:text-white">
-                Sign Up
-                </h4>
-                <p className="mt-1 block font-sans text-base font-normal leading-relaxed text-gray-700 antialiased dark:text-white">
-                Enter your details to Sign Up.
-                </p>
-                <div className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96">
-                <div className="mb-4 flex flex-col gap-6">
-                    <div className="relative h-11 w-full min-w-[200px]">
-                        <input
-                            type="email"
-                            className="dark:text-white peer h-full w-full rounded-md border border-blue-gray-200 bg-transparent px-3 py-3 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-pink-500 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
-                            placeholder=" "
-                            {...register("email" , { required: true })}
-                        />
-                        <label className="dark:text-white before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-400 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.1] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-pink-500 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-pink-500 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-pink-500 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
-                          Email
-                        </label>
+      <div className="w-full max-w-md relative z-10">
+        <div className="mb-8 text-center">
+          <div className="flex items-center justify-center mb-4">
+            <div className="flex items-center">
+              <div className="bg-gradient-to-br from-purple-600 to-pink-500 p-3 rounded-xl shadow-lg">
+                <BookOpen className="w-8 h-8 text-white" />
+              </div>
+              <span className="ml-3 text-3xl font-bold text-white">EduMaster</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-[#1e2235]/80 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden border border-[#2a2f45] relative">
+          {/* Decorative corner accent */}
+          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-b from-purple-500/20 to-transparent rounded-bl-full"></div>
+
+          <div className="p-8 relative z-10">
+            <div className="mb-8 text-center">
+              <h2 className="text-3xl font-bold text-white">Create Account</h2>
+              <p className="text-gray-400 mt-2">Join thousands of learners today</p>
+            </div>
+
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="space-y-6">
+            
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-300 block">Email</label>
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Mail className="h-5 w-5 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-200" />
                     </div>
-                    <div className="relative h-11 w-full min-w-[200px]">
                     <input
-                        type="password"
-                        className="dark:text-white peer h-full w-full rounded-md border border-blue-gray-200 bg-transparent px-3 py-3 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-pink-500 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
-                        placeholder=" "
-                        {...register("password" , { required: true })}
+                      type="email"
+                      className="w-full pl-10 pr-4 py-3 rounded-lg border border-[#2a2f45] focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all duration-200 bg-[#252a3e] text-white placeholder-gray-500"
+                      placeholder="Enter your email"
+                      {...register("email", { required: true })}
                     />
-                    <label className="dark:text-white before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-400 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.1] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-pink-500 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-pink-500 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-pink-500 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
-                        Password
-                    </label>
-                    </div>
+                  </div>
                 </div>
-                <button
-                    className="mt-6 block w-full select-none rounded-lg bg-pink-500 py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-pink-500/20 transition-all hover:shadow-lg hover:shadow-pink-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                    type="submit"
-                    data-ripple-light="true"
-                >
-                    Register
-                </button>
-                <p className="dark:text-white mt-4 block text-center font-sans text-base font-normal leading-relaxed text-gray-700 antialiased">
-                    Already have an account?
-                    <a
-                    className="font-semibold text-pink-500 transition-colors hover:text-blue-700"
-                    href="#"
-                    >
-                    Sign In
-                    </a>
-                </p>
-                <p className="dark:text-white mt-4 block text-center font-sans text-base font-normal leading-relaxed text-gray-700 antialiased">
-                    { errors }
-                </p>
-                </div>
-            </div>
-            
-            
 
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-300 block">Password</label>
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Lock className="h-5 w-5 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-200" />
+                    </div>
+                    <input
+                      type="password"
+                      className="w-full pl-10 pr-4 py-3 rounded-lg border border-[#2a2f45] focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all duration-200 bg-[#252a3e] text-white placeholder-gray-500"
+                      placeholder="Create a password"
+                      {...register("password", { required: true })}
+                    />
+                  </div>
+                </div>
+
+                {errors && <div className="text-red-400 text-sm text-center">{errors}</div>}
+
+                <button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 transform hover:translate-y-[-2px] active:translate-y-0 shadow-lg hover:shadow-purple-600/30 flex items-center justify-center"
+                >
+                  <span>Create Account</span>
+                  <ChevronRight className="ml-2 h-5 w-5 animate-pulse-subtle" />
+                </button>
+              </div>
+            </form>
+
+            <div className="mt-8 text-center">
+              <p className="text-gray-400">
+                Already have an account?{" "}
+                <a
+                  href="/login"
+                  className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-300 hover:to-pink-300 transition-colors"
+                >
+                  Sign In
+                </a>
+              </p>
             </div>
-        </form>
-    );
+          </div>
+        </div>
+
+        <div className="text-center mt-6">
+          <p className="text-xs text-gray-500">
+            By signing up, you agree to our{" "}
+            <a href="#" className="text-purple-400 hover:text-purple-300">
+              Terms of Service
+            </a>{" "}
+            and{" "}
+            <a href="#" className="text-purple-400 hover:text-purple-300">
+              Privacy Policy
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  )
 }
 
-export default SignUp;
+export default SignUp
+
