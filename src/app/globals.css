@@ -29,19 +29,17 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.image-feature-course{
+.image-feature-course {
   height: 250px !important;
 }
 
-.image-feature-course-2{
+.image-feature-course-2 {
   height: 180px !important;
 }
 
-.swiper{
+.swiper {
   padding: 40px 10px;
 }
-
-
 
 @keyframes blob {
   0% {
@@ -84,5 +82,15 @@ body {
   animation: pulse-subtle 1.5s infinite;
 }
 
+.loader {
+  animation: spin 1s linear infinite;
+}
 
-
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

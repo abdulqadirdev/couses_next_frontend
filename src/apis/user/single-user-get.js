@@ -1,9 +1,9 @@
 "use server";
 import useFetch from "@/hooks/useFetch";
+import userStore from "@/store/user-store";
 import { cookies } from "next/headers";
 
 const getSingleUser = async () => {
-  
   try {
     let token = cookies().get("auth-token")?.value;
 
@@ -30,4 +30,9 @@ const getSingleUser = async () => {
   }
 };
 
-export default getSingleUser;
+const logOut = () => {
+  cookies().delete("auth-token");
+  cookies().delete("refresh-token");
+};
+
+export { getSingleUser, logOut };

@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { Mail, Lock, BookOpen, ChevronRight } from "lucide-react"
+import { Mail, Lock, BookOpen, ChevronRight, Loader } from "lucide-react";
 
 function Login(props: any) {
-  const { handleSubmit, onSubmit, register, errors } = props
+  const { handleSubmit, onSubmit, register, errors, loader } = props;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#111827] bg-gradient-to-br from-[#111827] to-[#1a1f35] p-4">
@@ -21,7 +21,9 @@ function Login(props: any) {
               <div className="bg-gradient-to-br from-purple-600 to-pink-500 p-3 rounded-xl shadow-lg">
                 <BookOpen className="w-8 h-8 text-white" />
               </div>
-              <span className="ml-3 text-3xl font-bold text-white">EduMaster</span>
+              <span className="ml-3 text-3xl font-bold text-white">
+                EduMaster
+              </span>
             </div>
           </div>
         </div>
@@ -33,13 +35,17 @@ function Login(props: any) {
           <div className="p-8 relative z-10">
             <div className="mb-8 text-center">
               <h2 className="text-3xl font-bold text-white">Welcome Back</h2>
-              <p className="text-gray-400 mt-2">Sign in to continue your learning journey</p>
+              <p className="text-gray-400 mt-2">
+                Sign in to continue your learning journey
+              </p>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-300 block">Email</label>
+                  <label className="text-sm font-medium text-gray-300 block">
+                    Email
+                  </label>
                   <div className="relative group">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <Mail className="h-5 w-5 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-200" />
@@ -55,8 +61,13 @@ function Login(props: any) {
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-gray-300 block">Password</label>
-                    <a href="#" className="text-sm text-purple-400 hover:text-purple-300 transition-colors">
+                    <label className="text-sm font-medium text-gray-300 block">
+                      Password
+                    </label>
+                    <a
+                      href="#"
+                      className="text-sm text-purple-400 hover:text-purple-300 transition-colors"
+                    >
                       Forgot password?
                     </a>
                   </div>
@@ -73,14 +84,24 @@ function Login(props: any) {
                   </div>
                 </div>
 
-                {errors && <div className="text-red-400 text-sm text-center">{errors}</div>}
+                {errors && (
+                  <div className="text-red-400 text-sm text-center">
+                    {errors}
+                  </div>
+                )}
 
                 <button
                   type="submit"
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 transform hover:translate-y-[-2px] active:translate-y-0 shadow-lg hover:shadow-purple-600/30 flex items-center justify-center"
                 >
-                  <span>Sign In</span>
-                  <ChevronRight className="ml-2 h-5 w-5 animate-pulse-subtle" />
+                  {loader ? (
+                    <Loader className="loader"/>
+                  ) : (
+                    <>
+                      <span>Sign In</span>
+                      <ChevronRight className="ml-2 h-5 w-5 animate-pulse-subtle" />
+                    </>
+                  )}
                 </button>
               </div>
             </form>
@@ -113,8 +134,7 @@ function Login(props: any) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Login
-
+export default Login;
