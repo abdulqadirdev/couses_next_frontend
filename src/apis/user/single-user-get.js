@@ -4,9 +4,8 @@ import useFetch from "@/hooks/useFetch";
 import { cookies } from "next/headers";
 
 const getSingleUser = async () => {
-  
   try {
-    let token = cookies().get("auth-token")?.value;
+    let token = (await cookies()).get("auth-token")?.value;
 
     const response = await useFetch({
       endpoint: "single-user",

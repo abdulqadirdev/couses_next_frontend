@@ -1,9 +1,19 @@
-"use client"
+"use client";
 
-import { Mail, Lock, BookOpen, ChevronRight } from "lucide-react"
+import { Mail, Lock, BookOpen, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-function Login(props: any) {
-  const { handleSubmit, onSubmit, register, errors } = props
+function ForgetPassword(props: any) {
+  const { handleSubmit, onSubmit, register, errors } = props;
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!document.referrer || document.referrer.includes("otp-page")) {
+      router.push("/otp-page");
+    }
+    console.log("Referrer:");
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#111827] bg-gradient-to-br from-[#111827] to-[#1a1f35] p-4">
@@ -21,7 +31,9 @@ function Login(props: any) {
               <div className="bg-gradient-to-br from-purple-600 to-pink-500 p-3 rounded-xl shadow-lg">
                 <BookOpen className="w-8 h-8 text-white" />
               </div>
-              <span className="ml-3 text-3xl font-bold text-white">EduMaster</span>
+              <span className="ml-3 text-3xl font-bold text-white">
+                EduMaster
+              </span>
             </div>
           </div>
         </div>
@@ -32,14 +44,19 @@ function Login(props: any) {
 
           <div className="p-8 relative z-10">
             <div className="mb-8 text-center">
-              <h2 className="text-3xl font-bold text-white">Welcome Back</h2>
-              <p className="text-gray-400 mt-2">Sign in to continue your learning journey</p>
+              <h2 className="text-3xl font-bold text-white">Forgot password</h2>
+              <p className="text-gray-400 mt-2">
+                Enter your email address and we'll send you a link to reset your
+                password.
+              </p>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-300 block">Email</label>
+                  <label className="text-sm font-medium text-gray-300 block">
+                    Email
+                  </label>
                   <div className="relative group">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <Mail className="h-5 w-5 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-200" />
@@ -53,33 +70,11 @@ function Login(props: any) {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-gray-300 block">Password</label>
-                    <a href="/forget-password" className="text-sm text-purple-400 hover:text-purple-300 transition-colors">
-                      Forgot password?
-                    </a>
-                  </div>
-                  <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Lock className="h-5 w-5 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-200" />
-                    </div>
-                    <input
-                      type="password"
-                      className="w-full pl-10 pr-4 py-3 rounded-lg border border-[#2a2f45] focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all duration-200 bg-[#252a3e] text-white placeholder-gray-500"
-                      placeholder="Enter your password"
-                      {...register("password", { required: true })}
-                    />
-                  </div>
-                </div>
-
-                {errors && <div className="text-red-400 text-sm text-center">{errors}</div>}
-
                 <button
                   type="submit"
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 transform hover:translate-y-[-2px] active:translate-y-0 shadow-lg hover:shadow-purple-600/30 flex items-center justify-center"
                 >
-                  <span>Sign In</span>
+                  <span>Proceed</span>
                   <ChevronRight className="ml-2 h-5 w-5 animate-pulse-subtle" />
                 </button>
               </div>
@@ -87,12 +82,11 @@ function Login(props: any) {
 
             <div className="mt-8 text-center">
               <p className="text-gray-400">
-                Don't have an account?{" "}
                 <a
-                  href="/signup"
+                  href="/login"
                   className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-300 hover:to-pink-300 transition-colors"
                 >
-                  Sign Up Free
+                  Back to login
                 </a>
               </p>
             </div>
@@ -113,8 +107,7 @@ function Login(props: any) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Login
-
+export default ForgetPassword;
