@@ -30,6 +30,7 @@ function OtpComponent({ handleSubmit, onSubmit, setValue,errors }: any) {
     };
   }, []);
 
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#111827] bg-gradient-to-br from-[#111827] to-[#1a1f35] px-4 py-12 relative">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -44,9 +45,11 @@ function OtpComponent({ handleSubmit, onSubmit, setValue,errors }: any) {
             <div className="bg-gradient-to-br from-purple-600 to-pink-500 p-3 rounded-xl shadow-lg">
               <BookOpen className="w-8 h-8 text-white" />
             </div>
+
             <span className="ml-3 text-3xl font-bold text-white">
               EduMaster
             </span>
+
           </div>
         </div>
 
@@ -56,8 +59,10 @@ function OtpComponent({ handleSubmit, onSubmit, setValue,errors }: any) {
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-white mb-2">Enter OTP</h2>
               <p className="text-gray-400 text-sm">
+
                 Please enter the 6-digit code sent to your email to verify your
                 identity.
+
               </p>
             </div>
 
@@ -73,6 +78,21 @@ function OtpComponent({ handleSubmit, onSubmit, setValue,errors }: any) {
               </button>
             </form>
 
+
+            <div className="text-center mt-6">
+              <button
+                type="button"
+                onClick={handleResendOtp}
+                disabled={cooldown > 0}
+                className={`mt-4 text-sm font-medium ${
+                  cooldown > 0
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-purple-400 hover:text-purple-300"
+                } transition-colors`}
+              >
+                {cooldown > 0 ? `Resend OTP in ${cooldown}s` : "Resend OTP"}
+              </button>
+            </div>
             <div className="mt-6 text-center">
               <a
                 href="/login"
@@ -83,6 +103,7 @@ function OtpComponent({ handleSubmit, onSubmit, setValue,errors }: any) {
             </div>
           </div>
         </div>
+
 
         <div className="text-center mt-6">
           <button
@@ -116,6 +137,7 @@ function OtpComponent({ handleSubmit, onSubmit, setValue,errors }: any) {
             Privacy Policy
           </a>
           .
+
         </div>
       </div>
     </div>

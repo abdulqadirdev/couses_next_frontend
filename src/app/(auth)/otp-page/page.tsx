@@ -19,6 +19,7 @@ export default function otpPage() {
 
   const [error, setError] = useState<string | null>(null);
 
+
   const onSubmit = async (data: any) => {
     try {
       let dataGet = {
@@ -47,7 +48,15 @@ export default function otpPage() {
       handleSubmit={handleSubmit}
       register={register}
       errors={error}
+
       setValue={setValue}
     />
   );
 }
+
+    />
+  );
+}
+
+
+

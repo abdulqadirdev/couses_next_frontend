@@ -26,6 +26,7 @@ export default function ForgetPasswordPage() {
       if (result.success) {
         router.push(`/otp-page?email=${data?.email}`);
         console.log("hy");
+
       } else {
         setError(result.error.message);
       }
@@ -43,3 +44,4 @@ export default function ForgetPasswordPage() {
     />
   );
 }
+
