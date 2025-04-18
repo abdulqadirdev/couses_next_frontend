@@ -1,4 +1,5 @@
 import {
+
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
@@ -38,3 +39,4 @@ const OtpInput = ({ setValue }: any) => {
 
 
 export default OtpInput;
+
