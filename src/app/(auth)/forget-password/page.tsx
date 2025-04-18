@@ -16,17 +16,16 @@ export default function ForgetPasswordPage() {
 
   const [error, setError] = useState<string | null>(null);
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: any) => {
     try {
       setError(null);
       const result = await otpApi(data);
-   
-console.log(result);
+
+      console.log(result);
 
       if (result.success) {
-        router.push("/otp-page");
+        router.push(`/otp-page?email=${data?.email}`);
         console.log("hy");
-        
       } else {
         setError(result.error.message);
       }
@@ -44,5 +43,3 @@ console.log(result);
     />
   );
 }
-
-
