@@ -6,7 +6,8 @@ import { useForm } from "react-hook-form";
 import verifyOtp from "@/apis/auth/verify-otp";
 import OtpComponent from "@/components/auth/otp";
 
-export default function otpPage() {
+export default function otpPage({ params }: { params: { email: string } }) {
+
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -14,6 +15,7 @@ export default function otpPage() {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
     setValue,
   } = useForm<FormData>();
 

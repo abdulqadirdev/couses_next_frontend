@@ -8,7 +8,21 @@ function OtpComponent({ handleSubmit, onSubmit, setValue,errors }: any) {
   const [cooldown, setCooldown] = useState(0);
 
   // Handle OTP resend logic
+  // Handle OTP resend logic
   const handleResendOtp = () => {
+    // Simulate sending OTP again
+    setCooldown(30); // Set cooldown to 30 seconds
+
+    // Countdown every second
+    const interval = setInterval(() => {
+      setCooldown((prev) => {
+        if (prev === 1) {
+          clearInterval(interval); // Clear the interval when cooldown ends
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
     // Simulate sending OTP again
     setCooldown(30); // Set cooldown to 30 seconds
 
@@ -25,6 +39,11 @@ function OtpComponent({ handleSubmit, onSubmit, setValue,errors }: any) {
   };
 
   useEffect(() => {
+    return () => {
+      setCooldown(0);
+    };
+  }, []);
+
     return () => {
       setCooldown(0);
     };
@@ -50,6 +69,11 @@ function OtpComponent({ handleSubmit, onSubmit, setValue,errors }: any) {
               EduMaster
             </span>
 
+
+            <span className="ml-3 text-3xl font-bold text-white">
+              EduMaster
+            </span>
+
           </div>
         </div>
 
@@ -59,6 +83,10 @@ function OtpComponent({ handleSubmit, onSubmit, setValue,errors }: any) {
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-white mb-2">Enter OTP</h2>
               <p className="text-gray-400 text-sm">
+
+                Please enter the 6-digit code sent to your email to verify your
+                identity.
+
 
                 Please enter the 6-digit code sent to your email to verify your
                 identity.
@@ -77,6 +105,7 @@ function OtpComponent({ handleSubmit, onSubmit, setValue,errors }: any) {
                 <ChevronRight className="ml-2 h-5 w-5 animate-pulse-subtle" />
               </button>
             </form>
+
 
 
             <div className="text-center mt-6">
@@ -120,9 +149,29 @@ function OtpComponent({ handleSubmit, onSubmit, setValue,errors }: any) {
           </button>
         </div>
 
+
+        <div className="text-center mt-6">
+          <button
+            type="button"
+            onClick={handleResendOtp}
+            disabled={cooldown > 0}
+            className={`w-full mt-4 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-300 transform ${
+              cooldown > 0
+                ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white"
+            } shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2`}
+          >
+            {cooldown > 0 ? `Resend OTP in ${cooldown}s` : "Resend OTP"}
+          </button>
+        </div>
+
         {/* Footer */}
         <div className="text-center mt-6 text-xs text-gray-500">
           By signing in, you agree to our{" "}
+          <a
+            href="#"
+            className="text-purple-400 hover:text-purple-300 underline"
+          >
           <a
             href="#"
             className="text-purple-400 hover:text-purple-300 underline"
@@ -134,7 +183,14 @@ function OtpComponent({ handleSubmit, onSubmit, setValue,errors }: any) {
             href="#"
             className="text-purple-400 hover:text-purple-300 underline"
           >
+          <a
+            href="#"
+            className="text-purple-400 hover:text-purple-300 underline"
+          >
             Privacy Policy
+          </a>
+          .
+
           </a>
           .
 
