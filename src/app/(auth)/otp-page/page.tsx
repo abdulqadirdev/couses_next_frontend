@@ -16,7 +16,6 @@ export default function otpPage({ params }: { params: { email: string } }) {
     handleSubmit,
     formState: { errors },
     setValue,
-    setValue,
   } = useForm<FormData>();
 
   const [error, setError] = useState<string | null>(null);
