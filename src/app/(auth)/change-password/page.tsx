@@ -3,10 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import otpApi from "@/apis/auth/forget-password";
-import ForgetPassword from "@/components/auth/forget-password";
+import changePassApi from "@/apis/auth/change-password";
+import ChangePasswordComponent from "@/components/auth/change-password";
 
-export default function ForgetPasswordPage() {
+export default function ChangePassword() {
   const router = useRouter();
   const {
     register,
@@ -19,12 +19,12 @@ export default function ForgetPasswordPage() {
   const onSubmit = async (data: any) => {
     try {
       setError(null);
-      const result = await otpApi(data);
+      const result = await changePassApi(data);
 
       console.log(result);
 
       if (result.success) {
-        router.push(`/otp-page?email=${data?.email}`);
+        router.push(`/Password-changed`);
         console.log("hy");
       } else {
         setError(result.error.message);
@@ -35,7 +35,7 @@ export default function ForgetPasswordPage() {
   };
 
   return (
-    <ForgetPassword
+    <ChangePasswordComponent
       onSubmit={onSubmit}
       handleSubmit={handleSubmit}
       register={register}

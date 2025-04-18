@@ -4,7 +4,7 @@ import OtpInput from "@/components/shadcn-components/otp-input";
 import { BookOpen, ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
 
-function OtpComponent({ handleSubmit, onSubmit, register,setValue }: any) {
+function OtpComponent({ handleSubmit, onSubmit, setValue,errors }: any) {
   const [cooldown, setCooldown] = useState(0);
 
   // Handle OTP resend logic
@@ -62,7 +62,7 @@ function OtpComponent({ handleSubmit, onSubmit, register,setValue }: any) {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              <OtpInput register={register} setValue={setValue}/>
+              <OtpInput setValue={setValue} errors={errors} />
 
               <button
                 type="submit"
