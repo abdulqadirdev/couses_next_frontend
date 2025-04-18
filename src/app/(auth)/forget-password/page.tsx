@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import otpApi from "@/apis/auth/forget-password";
-import ForgetPassword from "@/components/auth/forget-password/page";
+import ForgetPassword from "@/components/auth/forget-password";
 
 export default function ForgetPasswordPage() {
   const router = useRouter();

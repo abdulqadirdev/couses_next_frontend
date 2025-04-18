@@ -3,58 +3,52 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import verifyOtp from "@/apis/auth/verify-otp";
-import OtpComponent from "@/components/auth/otp";
+import changePassApi from "@/apis/auth/change-password";
+import ChangePasswordComponent from "@/components/auth/change-password";
 
-export default function otpPage({ params }: { params: { email: string } }) {
-
+export default function ChangePassword() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
+    watch,
   } = useForm<FormData>();
 
   const [error, setError] = useState<string | null>(null);
 
-
   const onSubmit = async (data: any) => {
     try {
+      console.log(data);
+
+      setError(null);
       let dataGet = {
         email: searchParams.get("email"),
-        otp: data.otp,
+        password: data.password,
       };
-      console.log(dataGet, searchParams);
+      const result = await changePassApi(dataGet);
 
-      const result = await verifyOtp(dataGet);
       console.log(result);
 
       if (result.success) {
-        router.push(`/change-password?email=${searchParams.get("email")}`);
+        router.push(`/success-page`);
+        console.log("hy");
       } else {
         setError(result.error.message);
       }
     } catch (err) {
-      console.error(err);
       setError("An unexpected error occurred");
     }
   };
 
   return (
-    <OtpComponent
-      onSubmit={onSubmit}
-      handleSubmit={handleSubmit}
+    <ChangePasswordComponent
       register={register}
-      errors={error}
-
-      setValue={setValue}
+      handleSubmit={handleSubmit}
+      errors={errors}
+      watch={watch}
+      onSubmit={onSubmit}
     />
   );
 }
-
-
-
-

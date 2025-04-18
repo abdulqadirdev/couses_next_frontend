@@ -12,7 +12,7 @@ function ForgetPassword(props: any) {
     if (!document.referrer || document.referrer.includes("otp-page")) {
       router.push("/otp-page");
     }
-    console.log("Referrer:");
+    console.log("Referrer:",document.referrer);
   }, []);
 
   return (

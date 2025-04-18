@@ -4,20 +4,15 @@ import OtpInput from "@/components/shadcn-components/otp-input";
 import { BookOpen, ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
 
-
-function OtpComponent({ handleSubmit, onSubmit, register,setValue }: any) {
+function OtpComponent({ handleSubmit, onSubmit, setValue, errors }: any) {
   const [cooldown, setCooldown] = useState(0);
 
-  // Handle OTP resend logic
   const handleResendOtp = () => {
-    // Simulate sending OTP again
-    setCooldown(30); // Set cooldown to 30 seconds
-
-    // Countdown every second
+    setCooldown(30);
     const interval = setInterval(() => {
       setCooldown((prev) => {
         if (prev === 1) {
-          clearInterval(interval); // Clear the interval when cooldown ends
+          clearInterval(interval);
           return 0;
         }
         return prev - 1;
@@ -30,7 +25,6 @@ function OtpComponent({ handleSubmit, onSubmit, register,setValue }: any) {
       setCooldown(0);
     };
   }, []);
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#111827] bg-gradient-to-br from-[#111827] to-[#1a1f35] px-4 py-12 relative">
@@ -50,7 +44,6 @@ function OtpComponent({ handleSubmit, onSubmit, register,setValue }: any) {
             <span className="ml-3 text-3xl font-bold text-white">
               EduMaster
             </span>
-
           </div>
         </div>
 
@@ -60,17 +53,12 @@ function OtpComponent({ handleSubmit, onSubmit, register,setValue }: any) {
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-white mb-2">Enter OTP</h2>
               <p className="text-gray-400 text-sm">
-
-                Please enter the 6-digit code sent to your email to verify your
-                identity.
-
+                Please enter the 6-digit code sent to your email to verify your identity.
               </p>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-
-              <OtpInput register={register} setValue={setValue}/>
-
+              <OtpInput setValue={setValue} errors={errors} />
 
               <button
                 type="submit"
@@ -81,21 +69,21 @@ function OtpComponent({ handleSubmit, onSubmit, register,setValue }: any) {
               </button>
             </form>
 
-
             <div className="text-center mt-6">
               <button
                 type="button"
                 onClick={handleResendOtp}
                 disabled={cooldown > 0}
-                className={`mt-4 text-sm font-medium ${
+                className={`w-full mt-4 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-300 transform ${
                   cooldown > 0
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-purple-400 hover:text-purple-300"
-                } transition-colors`}
+                    ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                    : "bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white"
+                } shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2`}
               >
                 {cooldown > 0 ? `Resend OTP in ${cooldown}s` : "Resend OTP"}
               </button>
             </div>
+
             <div className="mt-6 text-center">
               <a
                 href="/login"
@@ -105,22 +93,6 @@ function OtpComponent({ handleSubmit, onSubmit, register,setValue }: any) {
               </a>
             </div>
           </div>
-        </div>
-
-
-        <div className="text-center mt-6">
-          <button
-            type="button"
-            onClick={handleResendOtp}
-            disabled={cooldown > 0}
-            className={`w-full mt-4 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-300 transform ${
-              cooldown > 0
-                ? "bg-gray-600 text-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white"
-            } shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2`}
-          >
-            {cooldown > 0 ? `Resend OTP in ${cooldown}s` : "Resend OTP"}
-          </button>
         </div>
 
         {/* Footer */}
@@ -140,7 +112,6 @@ function OtpComponent({ handleSubmit, onSubmit, register,setValue }: any) {
             Privacy Policy
           </a>
           .
-
         </div>
       </div>
     </div>

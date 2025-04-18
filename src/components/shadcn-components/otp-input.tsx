@@ -4,14 +4,13 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 
-
-const OtpInput = ({ setValue }: any) => {
+const OtpInput = ({ setValue, errors }: any) => {
   const [otp, setOtp] = useState<string>("");
 
   useEffect(() => {
-    setValue("otp", otp); 
+    setValue("otp", otp);
   }, [otp, setValue]);
 
   return (
@@ -32,11 +31,10 @@ const OtpInput = ({ setValue }: any) => {
           ))}
         </InputOTPGroup>
       </InputOTP>
+      {errors && <p className="mt-3 text-red-500"> {errors}</p>}
     </div>
   );
 };
-
-
 
 export default OtpInput;
 
