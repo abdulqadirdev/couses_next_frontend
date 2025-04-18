@@ -2,18 +2,13 @@
 import useFetch from "../../hooks/useFetch";
 
 export default async function changePassApi(formData) {
-  console.log(formData);
+  console.log("formData", formData);
 
   try {
-    const data = {
-      password: formData.password,
-    };
-    console.log(data);
-
     const response = await useFetch({
       endpoint: "change-password",
       method: "POST",
-      data,
+      data: formData,
     });
 
     if (response.success) {

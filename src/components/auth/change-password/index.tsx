@@ -4,7 +4,7 @@ import { Mail, Lock, BookOpen, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 function ChangePasswordComponent(props: any) {
-  const { handleSubmit, onSubmit, register, errors } = props;
+  const { handleSubmit, onSubmit, register, errors, watch } = props;
   const router = useRouter();
 
   return (
@@ -30,20 +30,19 @@ function ChangePasswordComponent(props: any) {
         </div>
 
         <div className="bg-[#1e2235]/80 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden border border-[#2a2f45] relative">
-        
           <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-b from-purple-500/20 to-transparent rounded-bl-full"></div>
 
           <div className="p-8 relative z-10">
             <div className="mb-8 text-center">
               <h2 className="text-3xl font-bold text-white">Change Password</h2>
               <p className="text-gray-400 mt-2">
-                Enter your email address and we'll send you a link to reset your
-                password.
+                Enter your new password and confirm it below.
               </p>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="space-y-6">
+                {/* New Password */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-300 block">
                     New Password
@@ -56,10 +55,15 @@ function ChangePasswordComponent(props: any) {
                       type="password"
                       className="w-full pl-10 pr-4 py-3 rounded-lg border border-[#2a2f45] focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all duration-200 bg-[#252a3e] text-white placeholder-gray-500"
                       placeholder="Enter new password"
-                      {...register("password", { required: true })}
+                      {...register("password", { required: "Password is required" })}
                     />
+                    {errors.password && (
+                      <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
+                    )}
                   </div>
                 </div>
+
+                {/* Confirm Password */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-300 block">
                     Confirm Password
@@ -72,10 +76,19 @@ function ChangePasswordComponent(props: any) {
                       type="password"
                       className="w-full pl-10 pr-4 py-3 rounded-lg border border-[#2a2f45] focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all duration-200 bg-[#252a3e] text-white placeholder-gray-500"
                       placeholder="Enter confirm password"
-                      {...register("confirm-password", { required: true })}
+                      {...register("confirmPassword", {
+                        required: "Please confirm your password",
+                        validate: (value: string) =>
+                          value === watch("password") || "Passwords do not match",
+                      })}
                     />
+                    {errors.confirmPassword && (
+                      <p className="text-sm text-red-500 mt-1">{errors.confirmPassword.message}</p>
+                    )}
                   </div>
                 </div>
+
+                {/* Submit Button */}
                 <button
                   type="submit"
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 transform hover:translate-y-[-2px] active:translate-y-0 shadow-lg hover:shadow-purple-600/30 flex items-center justify-center"
