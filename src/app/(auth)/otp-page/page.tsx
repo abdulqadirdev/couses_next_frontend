@@ -1,21 +1,34 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import otpApi from "@/apis/auth/forget-password";
-import ForgetPassword from "@/components/auth/forget-password/page";
+import verifyOtp from "@/apis/auth/verify-otp";
 import OtpComponent from "@/components/auth/otp/page";
 
-export default function otpPage() {
+export default function otpPage({ params }: { params: { email: string } }) {
+
   const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<FormData>();
 
   const [error, setError] = useState<string | null>(null);
+
+
+  const onSubmit = async (data: any) => {
+    try {
+      const otp = data.otp;
+      if (otp.length !== 6) return;
+      data.email = params.email;
+      const result = await verifyOtp(data);
+
+      if (result.success) {
+        router.push(`/change-password/email=${params.email}`);
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -28,6 +41,7 @@ console.log(result);
         // router.push("/");
         console.log("hy");
         
+
       } else {
         setError(result.error.message);
       }
@@ -42,8 +56,15 @@ console.log(result);
       handleSubmit={handleSubmit}
       register={register}
       errors={error}
+
+      setValue={setValue}
     />
   );
 }
+
+    />
+  );
+}
+
 
 
