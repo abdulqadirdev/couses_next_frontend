@@ -1,4 +1,5 @@
 'use server'
+
 import axios from 'axios';
 
 export default async function useFetch(ReqConfig) {
@@ -10,6 +11,7 @@ export default async function useFetch(ReqConfig) {
     } = ReqConfig;
     
    const url = process.env.API_URL + endpoint;
+   console.log(url);
    
     try {
         const response = await axios({

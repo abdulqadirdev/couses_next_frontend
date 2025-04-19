@@ -6,6 +6,7 @@ import checkToken from "@/helper/get-token";
 export function middleware(request: NextRequest) {
   const { cookies } = request;
 
+
   const authUrls = ["/login", "/signup"];
   if (authUrls.includes(request.nextUrl.pathname) && checkToken(cookies)) {
     return NextResponse.redirect(new URL("/", request.url));
@@ -19,8 +20,9 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // return NextResponse.redirect(new URL('/home', request.url))
+  return NextResponse.next();
 }
+
 export const config = {
-  matcher: ["/login", "/signup", "/account"],
+  matcher: ["/login", "/signup", "/account", "/otp-page"],
 };
