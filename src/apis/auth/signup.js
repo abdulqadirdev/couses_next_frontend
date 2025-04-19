@@ -19,7 +19,7 @@ export default async function SignUpApi(formData) {
             (await cookies()).set('refresh-token', response.data.data.refreshToken);
             return {
                 success: true,
-                user: response.message,
+                user: response?.data?.message,
             };
         }
         else {

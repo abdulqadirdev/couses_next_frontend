@@ -1,20 +1,32 @@
 "use client";
 
 import { create } from "zustand";
-import getSingleUser from "@/apis/user/single-user-get";
+import { getSingleUser, logOut } from "@/apis/user/single-user-get";
 import setRefereshToken from "@/apis/auth/referesh-token";
 
+interface userObjTypes {
+  _id: string;
+  userName: string;
+  createdAt: string;
+  updatedAt: string;
+  role: string;
+  provider: string;
+}
+
 interface UserState {
-  user: object | null;
+  user: userObjTypes | null;
   status: boolean;
   error: string | null;
+  loader: boolean;
   fetchUser: () => Promise<any>;
+  logOutFunc: () => void;
 }
 
 const userStore = create<UserState>((set) => ({
   user: null,
   status: false,
   error: null,
+  loader: false,
 
   fetchUser: async () => {
     try {
@@ -36,10 +48,20 @@ const userStore = create<UserState>((set) => ({
         });
       }
 
-      set({ user: singleUser, status: true, error: null });
+      set({
+        user: singleUser?.data?.user,
+        status: true,
+        error: null,
+        loader: true,
+      });
     } catch (errors: any) {
       set({ user: null, status: false, error: errors?.message });
     }
+  },
+
+  logOutFunc: () => {
+    logOut();
+    set({ user: null, status: false, error: null });
   },
 }));
 

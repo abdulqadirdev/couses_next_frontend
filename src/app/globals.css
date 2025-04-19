@@ -47,15 +47,15 @@ body {
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-.image-feature-course{
+.image-feature-course {
   height: 250px !important;
 }
 
-.image-feature-course-2{
+.image-feature-course-2 {
   height: 180px !important;
 }
 
-.swiper{
+.swiper {
   padding: 40px 10px;
 }
 

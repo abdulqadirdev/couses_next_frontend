@@ -1,6 +1,6 @@
 "use client";
-
 import userStore from "@/store/user-store";
+import { ChevronDown, ChevronUp, LogOut, Menu, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -9,9 +9,11 @@ const Header = (): React.ReactNode => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [activeSection, setActiveSection] = useState<string>("home");
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
-  const { status, fetchUser } = userStore();
+  const [dropdownOpen, setDropdown] = useState<boolean>(false);
+  const { status, fetchUser, user, logOutFunc, loader } = userStore();
+  console.log(user);
 
-  const sections = [
+  const sections: string[] = [
     "home",
     "courses",
     "categories",
@@ -98,7 +100,7 @@ const Header = (): React.ReactNode => {
               </Link>
             </>
           ) : (
-            <>
+            <div className="flex items-center gap-3 relative">
               <div className="w-10 h-10 flex items-center rounded-full bg-gray-500 overflow-hidden relative">
                 <Image
                   src="/intructor_1.jpg"
@@ -107,13 +109,46 @@ const Header = (): React.ReactNode => {
                   className="object-cover"
                 />
               </div>
+              <div
+                className="flex items-center gap-1 cursor-pointer"
+                onClick={() => setDropdown(!dropdownOpen)}
+              >
+                <span className="text-white text-sm font-thin">
+                  {user?.userName.slice(0, 10)}
+                </span>
+                {!dropdownOpen ? (
+                  <ChevronDown size={16} color="#fff" />
+                ) : (
+                  <ChevronUp size={16} color="#fff" />
+                )}
+                {dropdownOpen && (
+                  <div className="bg-blue-500 h-auto w-full py-4 px-2 flex flex-col items-center gap-2 absolute bottom-[-100px] left-4 z-10 rounded-lg shadow-md">
+                    <Link
+                      href="#"
+                      className="text-white text-sm font-medium flex items-center space-x-2 hover:text-gray-200 transition-colors duration-150"
+                    >
+                      <User className="w-4 h-4" />
+                      <span>Profile</span>
+                    </Link>
+                    <button
+                      onClick={() => {
+                        logOutFunc();
+                      }}
+                      className="text-white text-sm font-medium flex items-center space-x-2 hover:text-gray-200 transition-colors duration-150"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                )}
+              </div>
               <button
                 className="md:hidden text-gray-300"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
-                ☰
+                <Menu />
               </button>
-            </>
+            </div>
           )}
         </div>
       </div>
