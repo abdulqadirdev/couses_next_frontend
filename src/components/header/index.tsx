@@ -1,142 +1,191 @@
 "use client";
-
 import userStore from "@/store/user-store";
+import {
+  ChevronDown,
+  ChevronUp,
+  ClipboardList,
+  LogOut,
+  Menu,
+  User,
+  X,
+} from "lucide-react";
+
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 const Header = (): React.ReactNode => {
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [activeSection, setActiveSection] = useState<string>("home");
-  const [isScrolled, setIsScrolled] = useState<boolean>(false);
-  const { status, fetchUser } = userStore();
 
-  const sections = [
-    "home",
-    "courses",
-    "categories",
-    "instructors",
-    "testimonials",
-    "pricing",
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdown] = useState(false);
+  const { status, fetchUser, user, logOutFunc } = userStore();
+  const userName = user?.userName?.split(" ") || [];
+
+  const links = [
+    { label: "Home", href: "/" },
+    { label: "Courses", href: "/courses" },
+    { label: "Institutes", href: "/institutes" },
+    { label: "Apply Now", href: "/apply" },
+    { label: "Get Institute", href: "/apply" },
+
   ];
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-
-      for (const section of sections) {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          if (rect.top <= 100 && rect.bottom >= 100) {
-            setActiveSection(section);
-            break;
-          }
-        }
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   useEffect(() => {
     fetchUser();
   }, []);
 
   return (
-    <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled ? "bg-gray-900/95 backdrop-blur shadow-lg" : "bg-gray-700"
-      }`}
-    >
+    <header className="sticky top-0 z-50 w-full bg-gray-900/95 backdrop-blur shadow-md transition-all duration-300">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Logo */}
         <Link
-          href={"/"}
-          className="flex items-center gap-2 font-bold text-purple-400"
+          href="/"
+          className="flex items-center gap-2 font-bold text-purple-400 hover:scale-105 transition-transform"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
             fill="currentColor"
             className="h-8 w-8"
+            viewBox="0 0 24 24"
           >
-            <path d="M11.7 2.805a.75.75 0 01.6 0A60.65 60.65 0 0122.83 8.72a.75.75 0 01-.231 1.337 49.949 49.949 0 00-9.902 3.912l-.003.002-.34.18a.75.75 0 01-.707 0A50.009 50.009 0 007.5 12.174v-.224c0-.131.067-.248.172-.311a54.614 54.614 0 014.653-2.52.75.75 0 00-.65-1.352 56.129 56.129 0 00-4.78 2.589 1.858 1.858 0 00-.859 1.228 49.803 49.803 0 00-4.634-1.527.75.75 0 01-.231-1.337A60.653 60.653 0 0111.7 2.805z" />
-            <path d="M13.06 15.473a48.45 48.45 0 017.666-3.282c.134 1.414.22 2.843.255 4.285a.75.75 0 01-.46.71 47.878 47.878 0 00-8.105 4.342.75.75 0 01-.832 0 47.877 47.877 0 00-8.104-4.342.75.75 0 01-.461-.71c.035-1.442.121-2.87.255-4.286A48.4 48.4 0 016 13.18v1.27a1.5 1.5 0 00-.14 2.508c-.09.38-.222.753-.397 1.11.452.213.901.434 1.346.661a6.729 6.729 0 00.551-1.608 1.5 1.5 0 00.14-2.67v-.645a48.549 48.549 0 013.44 1.668 2.25 2.25 0 002.12 0z" />
+            <path d="..." /> {/* Your SVG Path Here */}
           </svg>
           <span className="text-xl">EduMaster</span>
         </Link>
 
-        <nav className="hidden md:flex gap-8">
-          {sections.map((item) => (
+        {/* Desktop Links */}
+        <nav className="hidden md:flex gap-5 items-center">
+          {links.map((item, i) => (
             <Link
-              key={item}
-              href={`#${item}`}
-              className={`text-sm font-medium transition-colors hover:text-purple-400 ${
-                activeSection === item ? "text-purple-400" : "text-gray-300"
+              key={i}
+              href={item.href}
+              className={`text-sm font-medium transition-colors ${
+                item.label === "Apply Now"
+                  ? "text-white bg-purple-600 px-4 py-2 rounded-full hover:bg-purple-700"
+                  : item.label === "Get Institute"
+                  ? "text-white bg-transparent border-1 border-purple-600 px-4 py-2 rounded-full"
+                  : "text-purple-300 hover:text-purple-400"
               }`}
             >
-              {item.charAt(0).toUpperCase() + item.slice(1)}
+              {item.label}
             </Link>
           ))}
         </nav>
 
+        {/* User/Auth Section */}
         <div className="flex items-center gap-4">
           {!status ? (
             <>
               <Link
                 href="/login"
-                className="hidden sm:block text-sm font-medium text-gray-300 transition-colors hover:text-purple-400"
+                className="hidden sm:block text-sm font-medium text-gray-300 hover:text-purple-400 transition"
               >
                 Log in
               </Link>
               <Link
                 href="/signup"
-                className="rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 transition-all duration-300 transform hover:scale-105"
+                className="rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 transition duration-300 transform hover:scale-105"
               >
                 Sign Up Free
               </Link>
             </>
           ) : (
-            <>
-              <div className="w-10 h-10 flex items-center rounded-full bg-gray-500 overflow-hidden relative">
+
+            <div className="relative flex items-center gap-3">
+              {/* Avatar */}
+              <div className="w-10 h-10 rounded-full overflow-hidden relative bg-gray-500 ring-2 ring-purple-500">
+
                 <Image
                   src="/intructor_1.jpg"
-                  alt="profile_img"
+                  alt="Profile"
                   fill
                   className="object-cover"
                 />
               </div>
+
+
+              {/* Username */}
+              <div
+                className="flex items-center gap-1 cursor-pointer select-none"
+                onClick={() => setDropdown(!dropdownOpen)}
+              >
+                <span className="text-white text-sm font-light">
+                  {userName[userName.length - 1]}
+                </span>
+                {dropdownOpen ? (
+                  <ChevronUp size={16} color="#fff" />
+                ) : (
+                  <ChevronDown size={16} color="#fff" />
+                )}
+              </div>
+
+              {/* Dropdown Menu */}
+              {dropdownOpen && (
+                <div className="absolute top-full right-0 mt-2 w-44 bg-white text-gray-800 rounded-md shadow-xl py-2 z-20 animate-fade-in">
+                  <Link
+                    href="#"
+                    className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 transition"
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    Profile
+                  </Link>
+                  <Link
+                    href="/user-applications"
+                    className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 transition"
+                  >
+                    <ClipboardList className="mr-2 h-4 w-4" />
+                    All Applications
+                  </Link>
+                  <button
+                    onClick={logOutFunc}
+                    className="w-full flex items-center px-4 py-2 text-sm text-left hover:bg-gray-100 transition"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </button>
+                </div>
+              )}
+
+              {/* Mobile Menu Toggle */}
+
               <button
                 className="md:hidden text-gray-300"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
-                ☰
+
+                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+
               </button>
-            </>
+            </div>
           )}
         </div>
       </div>
 
-      {/* Mobile menu */}
-
+      {/* Mobile Nav */}
       <div
-        className={`md:hidden bg-gray-800 overflow-hidden transition-all duration-300 ${
+        className={`md:hidden bg-gray-800 transition-all duration-300 overflow-hidden ${
           isMenuOpen
-            ? "max-h-screen opacity-100 visible"
+            ? "max-h-screen opacity-100 visible py-4"
             : "max-h-0 opacity-0 invisible"
         }`}
       >
-        {sections.map((item) => (
-          <Link
-            key={item}
-            href={`#${item}`}
-            className="block px-4 py-3 text-base font-medium text-gray-300 hover:bg-gray-700"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            {item.charAt(0).toUpperCase() + item.slice(1)}
-          </Link>
-        ))}
+        <div className="flex flex-col gap-4 px-4">
+          {links.map((item, i) => (
+            <Link
+              key={i}
+              href={item.href}
+              className={`text-sm font-medium transition-colors ${
+                item.label === "Apply Now"
+                  ? "text-white bg-purple-600 px-4 py-2 rounded-md hover:bg-purple-700"
+                  : item.label === "Own Institute"
+                  ? "text-white bg-emerald-600 px-4 py-2 rounded-md hover:bg-emerald-700"
+                  : "text-purple-300 hover:text-purple-400"
+              }`}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
       </div>
     </header>
   );

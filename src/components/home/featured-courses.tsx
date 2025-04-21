@@ -1,11 +1,18 @@
+"use client";
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import Image from "next/image";
 import Link from "next/link";
+import courseStore from "@/store/courses-store";
+import { useEffect, useState } from "react";
+import { Award, Calendar, TrendingUp } from "lucide-react";
+import Skeleton from "./cardSkeleton";
+import CourseCard from "./course-card";
 
 export interface Course {
-  id: number;
+  _id: string;
   title: string;
   description: string;
   image: string;
@@ -18,14 +25,44 @@ export interface Course {
   price: number;
   instructor: string;
   featured: boolean;
+  createdAt: string;
 }
 
-export interface FeaturedCourseProps {
-  courses: Course[];
-} 
+const FeaturedCourses = () => {
+  const { fetchAllCourses, courses2 } = courseStore();
+  const [isLoading, setIsLoading] = useState(true);
 
-const FeaturedCourses = ({ courses }: FeaturedCourseProps) => {
-  const featuredCourses = courses.filter((course) => course.featured);
+  useEffect(() => {
+    setIsLoading(true);
+    fetchAllCourses({ featured: true }).finally(() => setIsLoading(false));
+  }, []);
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const responsive = {
+    380: {
+      slidesPerView: 1,
+    },
+    600: {
+      slidesPerView: 2,
+    },
+    768: {
+      slidesPerView: 2,
+    },
+    1024: {
+      slidesPerView: 3,
+    },
+    1280: {
+      slidesPerView: 3.5,
+    },
+  };
 
   return (
     <section>
@@ -44,46 +81,33 @@ const FeaturedCourses = ({ courses }: FeaturedCourseProps) => {
           </p>
         </div>
 
-        <Swiper slidesPerView={3} spaceBetween={20}>
-          {featuredCourses.map((course) => (
-            <SwiperSlide key={course.id}>
-              <div className="h-full rounded-xl border border-gray-800 bg-gray-800/50 p-6 backdrop-blur-sm transition-all duration-300 hover:border-purple-500/50 hover:scale-105">
-                <div className="relative mb-6 overflow-hidden rounded-lg">
-                  <Image
-                    src={course.image || "/placeholder.svg"}
-                    width={400}
-                    height={250}
-                    alt={course.title}
-                    className="w-full object-cover image-feature-course"
-                  />
-                  <div className="absolute top-2 right-2 rounded-full bg-purple-600 px-2 py-1 text-xs font-medium text-white">
-                    Featured
-                  </div>
-                </div>
-                <h3 className="mb-2 text-xl font-bold text-white">
-                  {course.title}
-                </h3>
-                <p className="mb-4 text-gray-400 line-clamp-2">
-                  {course.description}
-                </p>
-                <div className="text-xl font-bold text-white">
-                  ${course.price}
-                </div>
-                <Link
-                  href="#"
-                  className="mt-4 block w-full rounded-md bg-purple-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-purple-700 transition-all duration-300"
-                >
-                  Enroll Now
-                </Link>
-              </div>
-            </SwiperSlide>
-          ))}
+        <Swiper
+          slidesPerView={3.5}
+          spaceBetween={20}
+          breakpoints={responsive}
+          className="pad-custom"
+        >
+          {isLoading ? (
+            <div className="grid grid-cols-4 gap-2">
+              <Skeleton />
+            </div>
+          ) : courses2 && courses2.length > 0 ? (
+            courses2.map((course) => (
+              <SwiperSlide key={course._id}>
+                <CourseCard key={course._id} course={course} />
+              </SwiperSlide>
+            ))
+          ) : (
+            <div className="text-gray-400 col-span-full text-center">
+              No courses found in this category.
+            </div>
+          )}
         </Swiper>
 
         <div className="mt-12 text-center">
           <Link
             href="#categories"
-            className="inline-flex items-center text-sm font-medium text-purple-400 hover:text-purple-300"
+            className="inline-flex items-center mb-3 text-sm font-medium text-purple-400 hover:text-purple-300"
           >
             View All Courses
             <svg
