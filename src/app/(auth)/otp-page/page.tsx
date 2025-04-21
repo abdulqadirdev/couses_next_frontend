@@ -1,13 +1,12 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import verifyOtp from "@/apis/auth/verify-otp";
 import OtpComponent from "@/components/auth/otp";
 
 export default function otpPage({ params }: { params: { email: string } }) {
-
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -19,7 +18,6 @@ export default function otpPage({ params }: { params: { email: string } }) {
   } = useForm<FormData>();
 
   const [error, setError] = useState<string | null>(null);
-
 
   const onSubmit = async (data: any) => {
     try {
@@ -49,12 +47,7 @@ export default function otpPage({ params }: { params: { email: string } }) {
       handleSubmit={handleSubmit}
       register={register}
       errors={error}
-
       setValue={setValue}
     />
   );
 }
-
-
-
-
