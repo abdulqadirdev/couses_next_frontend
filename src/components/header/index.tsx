@@ -9,11 +9,13 @@ import {
   User,
   X,
 } from "lucide-react";
+
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 const Header = (): React.ReactNode => {
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [dropdownOpen, setDropdown] = useState(false);
   const { status, fetchUser, user, logOutFunc } = userStore();
@@ -25,6 +27,7 @@ const Header = (): React.ReactNode => {
     { label: "Institutes", href: "/institutes" },
     { label: "Apply Now", href: "/apply" },
     { label: "Get Institute", href: "/apply" },
+
   ];
 
   useEffect(() => {
@@ -87,9 +90,11 @@ const Header = (): React.ReactNode => {
               </Link>
             </>
           ) : (
+
             <div className="relative flex items-center gap-3">
               {/* Avatar */}
               <div className="w-10 h-10 rounded-full overflow-hidden relative bg-gray-500 ring-2 ring-purple-500">
+
                 <Image
                   src="/intructor_1.jpg"
                   alt="Profile"
@@ -97,6 +102,7 @@ const Header = (): React.ReactNode => {
                   className="object-cover"
                 />
               </div>
+
 
               {/* Username */}
               <div
@@ -141,11 +147,14 @@ const Header = (): React.ReactNode => {
               )}
 
               {/* Mobile Menu Toggle */}
+
               <button
                 className="md:hidden text-gray-300"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
+
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+
               </button>
             </div>
           )}
