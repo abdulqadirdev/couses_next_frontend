@@ -38,7 +38,22 @@ function SignUp(props: any) {
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="space-y-6">
-            
+              <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-300 block">Full Name</label>
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <User className="h-5 w-5 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-200" />
+                    </div>
+                    <input
+                      type="text"
+                      name="userName"
+                      className="w-full pl-10 pr-4 py-3 rounded-lg border border-[#2a2f45] focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all duration-200 bg-[#252a3e] text-white placeholder-gray-500"
+                      placeholder="Enter your full name"
+                      {...register("userName", { required: true })}
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-300 block">Email</label>
                   <div className="relative group">
