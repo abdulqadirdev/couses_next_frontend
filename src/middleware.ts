@@ -6,13 +6,13 @@ import checkToken from "@/helper/get-token";
 export function middleware(request: NextRequest) {
   const { cookies } = request;
 
-
   const authUrls = ["/login", "/signup"];
   if (authUrls.includes(request.nextUrl.pathname) && checkToken(cookies)) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  const protectedUrls = ["/account"];
+  const protectedUrls = ["/dashboard"];
+  
   if (
     protectedUrls.includes(request.nextUrl.pathname) &&
     !checkToken(cookies)
