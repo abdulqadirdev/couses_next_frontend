@@ -6,7 +6,7 @@ export default async function getCourses({
   limit = 10,
   page = 1,
   search = "",
-  featured = false,
+  featured = "",
   category = "",
 }) {
   try {
