@@ -8,27 +8,79 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
+  Menu,
 } from "lucide-react";
 import courseStore from "@/store/courses-store";
+import { useSearchParams } from "next/navigation";
 
 const Courses = () => {
   // Type the courses state using the Course type
-  const { courses2, fetchAllCourses } = courseStore();
+  const { courses2, fetchAllCourses, pagination, loader2 } = courseStore();
+  console.log(pagination);
+  const [currentCount, setCount] = useState<number>(1);
   const courses = courses2;
+  const [search, setSearch] = useState<string>("");
   const [queries, setQueries] = useState({
     search: "",
-    limit: "",
-    page: "",
+    limit: 5,
+    page: 1,
   });
-  console.log(courses2);
+  console.log(queries);
 
   useEffect(() => {
-    fetchAllCourses({});
-  }, []);
+    console.log(queries.page, pagination?.totalPages);
 
-  const querySetter=(e)=>{
+    if (queries.page >= pagination?.totalPages) {
+      setQueries((prev: any) => ({
+        ...prev,
+        page: 1,
+      }));
+    }
+  }, [queries.limit]);
 
-  }
+  useEffect(() => {
+    let timeOut = setTimeout(() => {
+      console.log("completed word");
+
+      setQueries((prev: any) => ({
+        ...prev,
+        ["search"]: search,
+      }));
+    }, 1000);
+    return () => clearTimeout(timeOut);
+  }, [search]);
+
+  useEffect(() => {
+    setCount(courses2.length + 1)
+    fetchAllCourses(queries);
+  }, [queries]);
+
+  const handlePagination = (type: string) => {
+    if (type === "inc") {
+      if (queries.page < pagination?.totalPages) {
+        setQueries((prev: any) => ({
+          ...prev,
+          ["page"]: queries.page + 1,
+        }));
+      }
+    } else {
+      if (queries.page > 0 && queries.page <= pagination?.totalPages) {
+        setQueries((prev: any) => ({
+          ...prev,
+          ["page"]: queries.page - 1,
+        }));
+      }
+    }
+  };
+
+  const querySetter = (e: any) => {
+    const { name, value } = e.target || e;
+
+    setQueries((prev: any) => ({
+      ...prev,
+      [name]: name !== "search" ? value : "",
+    }));
+  };
 
   const formatDate = (dateString: string): string => {
     const options: Intl.DateTimeFormatOptions = {
@@ -39,15 +91,14 @@ const Courses = () => {
     return new Date(dateString).toLocaleDateString("en-US", options);
   };
 
-  // Function to delete a course with typed id
-  // const deleteCourse = (id: number): void => {
-  //   if (confirm("Are you sure you want to delete this course?")) {
-  //     setCourses(courses.filter((course) => course.id !== id));
-  //   }
-  // };
-
   return (
-    <div className="w-full px-4 sm:px-6 md:px-8 py-6 max-w-7xl mx-auto">
+    <div className="w-full px-2 sm:px-6 md:px-8 py-6 max-w-7xl mx-auto">
+      {loader2 && (
+        <div className="fixed top-0 left-0 z-20 h-screen w-full bg-white/10 flex justify-center items-center">
+          <span className="loader"></span>
+        </div>
+      )}
+      <Menu className="block md:hidden" />
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
@@ -64,6 +115,7 @@ const Courses = () => {
           <input
             type="text"
             name="search"
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search courses..."
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
           />
@@ -75,6 +127,7 @@ const Courses = () => {
           <span className="text-sm text-gray-600">Show</span>
           <select
             name="limit"
+            onChange={(e) => querySetter(e)}
             className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
           >
             <option value="5">5</option>
@@ -87,22 +140,22 @@ const Courses = () => {
       </div>
 
       {/* Table for larger screens */}
-      <div className="hidden sm:block bg-white rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className="bg-white rounded-lg shadow overflow-hidden w-full">
+        <div className="overflow-x-auto w-full">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   S.No
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Course Name
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Created On
                 </th>
 
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Action
                 </th>
               </tr>
@@ -110,18 +163,18 @@ const Courses = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {courses.map((course, i) => (
                 <tr key={course._id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                    {i + 1}
+                  <td className="p-3 whitespace-nowrap text-sm text-gray-500">
+                    {currentCount + i}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
                       {course.title}
                     </div>
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                  <td className="p-3 whitespace-nowrap text-sm text-gray-500">
                     {formatDate(course.createdAt)}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                  <td className="p-3 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">
                       <button
                         className="text-blue-600 hover:text-blue-900"
@@ -151,75 +204,37 @@ const Courses = () => {
         </div>
       </div>
 
-      {/* Card view for mobile */}
-      <div className="sm:hidden space-y-4">
-        {courses.map((course, i) => (
-          <div key={course._id} className="bg-white rounded-lg shadow p-4">
-            <div className="flex justify-between items-start mb-2">
-              <div>
-                <h3 className="font-medium text-gray-900">{course.title}</h3>
-                <p className="text-sm text-gray-500">
-                  Created: {formatDate(course.createdAt)}
-                </p>
-              </div>
-              {/* <span
-                className={`px-2 text-xs leading-5 font-semibold rounded-full ${
-                  course.status === "active"
-                    ? "bg-green-100 text-green-800"
-                    : "bg-yellow-100 text-yellow-800"
-                }`}
-              >
-                {course.status.charAt(0).toUpperCase() + course.status.slice(1)}
-              </span> */}
-            </div>
-            <div className="flex justify-between items-center">
-              {/* <p className="text-sm text-gray-500">
-                {course.students} students
-              </p> */}
-              <div className="flex space-x-3">
-                <button
-                  className="text-blue-600 hover:text-blue-900 p-1"
-                  title="View"
-                >
-                  <Eye size={18} />
-                </button>
-                <button
-                  className="text-green-600 hover:text-green-900 p-1"
-                  title="Edit"
-                >
-                  <Pencil size={18} />
-                </button>
-                <button
-                  className="text-red-600 hover:text-red-900 p-1"
-                  title="Delete"
-                  // onClick={() => deleteCourse(course.id)}
-                >
-                  <Trash2 size={18} />
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
       {/* Pagination */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 bg-white rounded-lg shadow px-4 py-3">
         <div className="text-xs sm:text-sm text-gray-500 order-2 sm:order-1">
-          Showing <span className="font-medium">1</span> to{" "}
-          <span className="font-medium">{courses.length}</span> of{" "}
-          <span className="font-medium">{courses.length}</span> entries
+          Showing <span className="font-medium">{pagination?.page}</span> to{" "}
+          <span className="font-medium">{pagination?.limit}</span> of{" "}
+          <span className="font-medium">{pagination?.total}</span> entries
         </div>
         <div className="flex space-x-1 order-1 sm:order-2">
           <button
+            onClick={() => handlePagination("dec")}
             className="px-2 sm:px-3 py-1 border border-gray-300 rounded-md text-xs sm:text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-            disabled
+            disabled={queries.page == 1}
           >
             <ChevronLeft size={14} className="mr-1" /> Prev
           </button>
-          <button className="px-2 sm:px-3 py-1 border border-gray-300 rounded-md text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
-            1
-          </button>
-          <button className="px-2 sm:px-3 py-1 border border-gray-300 rounded-md text-xs sm:text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 flex items-center">
+          {[...Array(pagination?.totalPages)].map((_, i) => (
+            <button
+              key={i}
+              onClick={() => querySetter({ name: "page", value: i + 1 })}
+              className={`px-2 sm:px-3 py-1 border border-gray-300 rounded-md text-xs sm:text-sm font-medium  ${
+                i + 1 == queries.page ? "bg-blue-700 text-white" : ""
+              } hover:bg-blue-700`}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => handlePagination("inc")}
+            className="px-2 sm:px-3 py-1 border border-gray-300 rounded-md text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 bg-gray-50 hover:bg-gray-100 flex items-center"
+            disabled={queries.page == pagination?.totalPages}
+          >
             Next <ChevronRight size={14} className="ml-1" />
           </button>
         </div>
