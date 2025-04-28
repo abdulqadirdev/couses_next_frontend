@@ -10,25 +10,49 @@ import {
   ChevronRight,
 } from "lucide-react";
 import courseStore from "@/store/courses-store";
+import userStore from "@/store/user-store";
 
 const Courses = () => {
-  // Type the courses state using the Course type
   const { courses2, fetchAllCourses } = courseStore();
+  const { user, fetchUser } = userStore();
+
+  const [search, setSearch] = useState<string>("");
+  console.log("hy",user?.owner);
+
   const courses = courses2;
+
   const [queries, setQueries] = useState({
     search: "",
-    limit: "",
-    page: "",
+    limit: "5",
+    page: "1",
   });
+
   console.log(courses2);
 
   useEffect(() => {
-    fetchAllCourses({});
+    fetchUser();
   }, []);
 
-  const querySetter=(e)=>{
+  useEffect(() => {
+    fetchAllCourses({ ...queries, params: user?.owner });
+  }, [queries]);
 
-  }
+  useEffect(() => {
+    if (search) return;
+
+    let timeOut = setTimeout(() => {
+      setQueries((prev) => ({ ...prev, ["search"]: search }));
+    }, 1000);
+
+    return () => clearTimeout(timeOut);
+  }, [search]);
+
+  const querySetter = (e: any) => {
+    const { name, value } = e.target;
+    console.log(name, value);
+
+    setQueries((prev) => ({ ...prev, [name]: name !== "search" ? value : "" }));
+  };
 
   const formatDate = (dateString: string): string => {
     const options: Intl.DateTimeFormatOptions = {
@@ -64,6 +88,7 @@ const Courses = () => {
           <input
             type="text"
             name="search"
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search courses..."
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
           />
@@ -75,6 +100,7 @@ const Courses = () => {
           <span className="text-sm text-gray-600">Show</span>
           <select
             name="limit"
+            onChange={(e) => querySetter(e)}
             className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
           >
             <option value="5">5</option>
