@@ -30,7 +30,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-[#0a0f1f] via-[#1b1037] to-[#2a1550] text-white`}
       >
         <div className="flex min-h-screen">
-          
+
           <SidebarProvider>
             <AppSidebar />
             <main className="flex-1 flex flex-col">
@@ -44,6 +44,7 @@ export default function RootLayout({
               </header>
 
               {/* Main Content */}
+
               <div className="bg-white/5 m-4 backdrop-blur-sm border border-white/10 shadow-xl rounded-3xl  overflow-y-auto transition-all duration-300">
                 {children}
               </div>
@@ -53,6 +54,7 @@ export default function RootLayout({
                   © 2025 Edu Master. All rights reserved.
                 </p>
               </footer>
+
             </main>
           </SidebarProvider>
         </div>
