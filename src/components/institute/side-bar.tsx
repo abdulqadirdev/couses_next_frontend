@@ -20,8 +20,13 @@ import {
 import { usePathname } from "next/navigation";
 
 const items = [
+
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Courses", url: "#", icon: BookCopyIcon },
+
+  { title: "Dashboard", url: "/institute/dashboard", icon: LayoutDashboard },
+  { title: "Courses", url: "/institute/courses", icon: BookCopyIcon },
+
   { title: "Categories", url: "#", icon: Boxes },
   { title: "Course Materials", url: "#", icon: Files },
   { title: "Student Applications", url: "#", icon: FileBarChart },
@@ -32,7 +37,10 @@ export function AppSidebar() {
   const path = usePathname();
 
   return (
-    <Sidebar className="w-64 h-screen fixed left-0 top-0 ">
+
+
+    <Sidebar className="w-64 h-[100vh] fixed left-0 top-0 ">
+
       <div className="bg-gradient-to-b from-[#2E1A47] to-[#3B1D5C] shadow-xl h-screen">
         <SidebarContent className="flex flex-col h-full text-white">
           <div className="p-6 border-b border-white/10 flex items-center gap-4">

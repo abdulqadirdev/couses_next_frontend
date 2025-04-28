@@ -6,15 +6,18 @@ export default async function getCourses({
   limit = 10,
   page = 1,
   search = "",
-  featured = false,
+  featured = "",
   category = "",
+  params = "",
 }) {
   try {
+    console.log(params);
+    
     let token = (await cookies()).get("auth-token")?.value;
-    console.log(limit, page,featured,search,category);
+    console.log(limit, page, featured, search, category);
 
     const response = await useFetch({
-      endpoint: `courses?limit=${limit}&search=${search}&page=${page}&featured=${featured}&category=${category}`,
+      endpoint: endpoint + params + queries,
       header: {
         Authorization: `Bearer ${token}`,
       },
@@ -25,6 +28,7 @@ export default async function getCourses({
       return {
         success: true,
         data: response?.data?.data,
+        pagination: response?.data?.pagination,
       };
     } else {
       return {
