@@ -14,10 +14,8 @@ export default async function getCourses({
     console.log(params);
     
     let token = (await cookies()).get("auth-token")?.value;
-    console.log(limit, page, featured, search, category, params);
-    let endpoint = params ? "institute-courses" : "courses";
-    let queries = `?limit=${limit}&search=${search}&page=${page}&featured=${featured}&category=${category}`;
-    params = "/" + params;
+    console.log(limit, page, featured, search, category);
+
     const response = await useFetch({
       endpoint: endpoint + params + queries,
       header: {
@@ -30,6 +28,7 @@ export default async function getCourses({
       return {
         success: true,
         data: response?.data?.data,
+        pagination: response?.data?.pagination,
       };
     } else {
       return {

@@ -17,13 +17,14 @@ export interface Course {
 
 interface GetCoursesResponse {
   success: boolean;
-  data?: { courses: Course[] };
+  data?: { courses: Course[]; pagination: any };
   error?: string;
 }
 
 interface CourseStore {
   courses: Course[];
   courses2: Course[];
+  pagination: any;
   status: boolean;
   status2: boolean;
   error: string | null;
@@ -37,6 +38,7 @@ interface CourseStore {
 const courseStore = create<CourseStore>((set) => ({
   courses: [],
   courses2: [],
+  pagination: {},
   status: false,
   status2: false,
   error: null,
@@ -52,6 +54,7 @@ const courseStore = create<CourseStore>((set) => ({
     if (res.success) {
       set({
         courses2: res.data?.courses || [],
+        pagination: res.data?.pagination,
         status2: true,
         loader2: false,
         error2: null,
