@@ -324,3 +324,8 @@ body {
     transform: rotate(360deg);
   }
 }
+
+
+.animate-profile{
+  animation: profileSpread 1s ease-out insf;
+}

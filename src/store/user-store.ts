@@ -11,6 +11,7 @@ interface userObjTypes {
   updatedAt: string;
   role: string;
   provider: string;
+  owner: string;
 }
 
 interface UserState {

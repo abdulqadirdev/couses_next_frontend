@@ -15,7 +15,6 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 const Header = (): React.ReactNode => {
-
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [dropdownOpen, setDropdown] = useState(false);
   const { status, fetchUser, user, logOutFunc } = userStore();
@@ -27,13 +26,12 @@ const Header = (): React.ReactNode => {
     { label: "Institutes", href: "/institutes" },
     { label: "Apply Now", href: "/apply" },
     { label: "Get Institute", href: "/apply" },
-
   ];
 
   useEffect(() => {
     fetchUser();
   }, []);
-
+  !user?.owner && links[4].label === "Get Institute";
   return (
     <header className="sticky top-0 z-50 w-full bg-gray-900/95 backdrop-blur shadow-md transition-all duration-300">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -54,27 +52,31 @@ const Header = (): React.ReactNode => {
         </Link>
 
         {/* Desktop Links */}
-        <nav className="hidden md:flex gap-5 items-center">
-          {links.map((item, i) => (
-            <Link
-              key={i}
-              href={item.href}
-              className={`text-sm font-medium transition-colors ${
-                item.label === "Apply Now"
-                  ? "text-white bg-purple-600 px-4 py-2 rounded-full hover:bg-purple-700"
-                  : item.label === "Get Institute"
-                  ? "text-white bg-transparent border-1 border-purple-600 px-4 py-2 rounded-full"
-                  : "text-purple-300 hover:text-purple-400"
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
+        <nav className="hidden md:flex gap-8 items-center">
+          {links
+            .filter(
+              (item) => (user?.owner && item.label !== "Get Institute") || links
+            )
+            .map((item, i) => (
+              <Link
+                key={i}
+                href={item.href}
+                className={`text-sm font-medium transition-colors ${
+                  item.label === "Apply Now"
+                    ? "text-white bg-purple-600 px-4 py-2 rounded-full hover:bg-purple-700"
+                    : item.label === "Get Institute"
+                    ? "text-white bg-transparent border-1 border-purple-600 px-4 py-2 rounded-full"
+                    : "text-purple-300 hover:text-purple-400"
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
         </nav>
 
         {/* User/Auth Section */}
         <div className="flex items-center gap-4">
-          {!status ? (
+          {status ? (
             <>
               <Link
                 href="/login"
@@ -90,11 +92,20 @@ const Header = (): React.ReactNode => {
               </Link>
             </>
           ) : (
-
             <div className="relative flex items-center gap-3">
-              {/* Avatar */}
-              <div className="w-10 h-10 rounded-full overflow-hidden relative bg-gray-500 ring-2 ring-purple-500">
+              {/* dashboard */}
 
+              {!user?.owner && (
+                <Link
+                  href="/institute/dashboard"
+                  className="text-white hidden md:flex text-sm bg-transparent border-1 border-purple-600 px-4 py-2 rounded-full hover:bg-purple-700 transition-all duration-200"
+                >
+                  Dashboard
+                </Link>
+              )}
+
+              {/* Avatar */}
+              <div className="w-10 h-10 rounded-full overflow-hidden relative bg-gray-500 ring-2 ring-purple-500 animate-profile">
                 <Image
                   src="/intructor_1.jpg"
                   alt="Profile"
@@ -102,7 +113,6 @@ const Header = (): React.ReactNode => {
                   className="object-cover"
                 />
               </div>
-
 
               {/* Username */}
               <div
@@ -152,9 +162,7 @@ const Header = (): React.ReactNode => {
                 className="md:hidden text-gray-300"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
-
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-
               </button>
             </div>
           )}

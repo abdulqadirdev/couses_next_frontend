@@ -11,15 +11,14 @@ import {
   Menu,
 } from "lucide-react";
 import courseStore from "@/store/courses-store";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const Courses = () => {
-  // Type the courses state using the Course type
   const { courses2, fetchAllCourses, pagination, loader2 } = courseStore();
   console.log(pagination);
-  const [currentCount, setCount] = useState<number>(1);
   const courses = courses2;
   const [search, setSearch] = useState<string>("");
+  const router = useRouter();
   const [queries, setQueries] = useState({
     search: "",
     limit: 5,
@@ -51,7 +50,10 @@ const Courses = () => {
   }, [search]);
 
   useEffect(() => {
-    setCount(courses2.length + 1)
+    router.push(
+      `?search=${queries.search}&limit=${queries.limit}&page=${queries.page}`
+    );
+
     fetchAllCourses(queries);
   }, [queries]);
 
@@ -98,6 +100,7 @@ const Courses = () => {
           <span className="loader"></span>
         </div>
       )}
+
       <Menu className="block md:hidden" />
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
@@ -164,7 +167,7 @@ const Courses = () => {
               {courses.map((course, i) => (
                 <tr key={course._id} className="hover:bg-gray-50">
                   <td className="p-3 whitespace-nowrap text-sm text-gray-500">
-                    {currentCount + i}
+                    {(queries.page - 1) * queries.limit + i + 1}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
