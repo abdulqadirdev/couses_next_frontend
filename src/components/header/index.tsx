@@ -95,7 +95,7 @@ const Header = (): React.ReactNode => {
             <div className="relative flex items-center gap-3">
               {user?.owner && (
                 <Link
-                  href={"/institute/dashboard"}
+                  href={"/institute-dashboard/dashboard"}
                   className="text-white bg-transparent border-1 border-purple-600 px-4 py-2 rounded-full"
                 >
                   Dashboard

@@ -15,11 +15,10 @@ import { useRouter } from "next/navigation";
 import userStore from "@/store/user-store";
 
 const Courses = () => {
-  // Type the courses state using the Course type
-  const { courses2, fetchAllCourses, pagination, loader2 } = courseStore();
   const { user, fetchUser } = userStore();
-  console.log(pagination);
-  const courses = courses2;
+  const ownerId = user?.owner;
+  const { ownCourses, pagination, loader, fetchOwnCourse } = courseStore();
+  const courses = ownCourses;
   const [search, setSearch] = useState<string>("");
   const router = useRouter();
   const [queries, setQueries] = useState({
@@ -45,24 +44,26 @@ const Courses = () => {
     let timeOut = setTimeout(() => {
       setQueries((prev: any) => ({
         ...prev,
-        ["search"]: search,
+        search,
+        page: 1,
       }));
     }, 1000);
     return () => clearTimeout(timeOut);
   }, [search]);
 
   useEffect(() => {
-    let query = "";
-    if (queries.limit) query += `?limit=${queries.limit}`;
-    if (queries.search) query += `&search=${queries.search}`;
-    if (queries.page) query += `&page=${queries.page}`;
+    if (ownerId) {
+      alert()
+      let query = "";
+      if (queries.limit) query += `?limit=${queries.limit}`;
+      if (queries.search) query += `&search=${queries.search}`;
+      if (queries.page) query += `&page=${queries.page}`;
 
-    router.push("/institute/courses" + query);
-    let obj = { ...queries, params: user?.owner };
-    console.log("obj===>", obj);
-
-    fetchAllCourses(obj);
-  }, [queries]);
+      router.push("/institute-dashboard/courses" + query);
+      let obj = { ...queries, instituteId: ownerId };
+      fetchOwnCourse(obj);
+    }
+  }, [queries, ownerId]);
 
   const handlePagination = (type: string) => {
     if (type === "inc") {
@@ -102,9 +103,9 @@ const Courses = () => {
 
   return (
     <div className="w-full px-2 sm:px-6 md:px-8  max-w-7xl mx-auto">
-      {loader2 && (
+      {loader && (
         <div className="fixed top-0 left-0 z-20 h-screen w-full bg-white/10 flex justify-center items-center">
-          <span className="loader"></span>
+          <span className="loader-2"></span>
         </div>
       )}
       <Menu className="block md:hidden" />
