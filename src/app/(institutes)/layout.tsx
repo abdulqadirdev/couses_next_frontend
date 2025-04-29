@@ -44,9 +44,7 @@ export default function RootLayout({
               </header>
 
               {/* Main Content */}
-
               <div className="bg-white/5 m-4 backdrop-blur-sm border border-white/10 shadow-xl rounded-3xl h-[90vh] flex items-center  overflow-y-auto transition-all duration-300">
-
                 {children}
               </div>
               {/* Footer */}

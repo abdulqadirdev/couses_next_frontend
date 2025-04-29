@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import checkToken from "@/helper/get-token";
 
-
 export function middleware(request: NextRequest) {
   const { cookies } = request;
 
@@ -11,8 +10,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  const protectedUrls = ["/dashboard"];
-  
+  const protectedUrls = ["/dashboard", "/institute-dashboard"];
+
   if (
     protectedUrls.includes(request.nextUrl.pathname) &&
     !checkToken(cookies)
