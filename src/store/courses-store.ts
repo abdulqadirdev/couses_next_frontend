@@ -48,7 +48,11 @@ const courseStore = create<CourseStore>((set) => ({
 
   fetchAllCourses: async (params) => {
     set({ loader2: true });
+    console.log(params);
+    
     const res: GetCoursesResponse = await getCourses(params);
+    console.log(res);
+    
     if (res.success) {
       set({
         courses2: res.data?.courses || [],
@@ -84,6 +88,7 @@ const courseStore = create<CourseStore>((set) => ({
       });
     }
   },
+
 }));
 
 export default courseStore;

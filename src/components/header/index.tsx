@@ -54,8 +54,8 @@ const Header = (): React.ReactNode => {
         {/* Desktop Links */}
         <nav className="hidden md:flex gap-8 items-center">
           {links
-            .filter(
-              (item) => (user?.owner && item.label !== "Get Institute") || links
+            .filter((item) =>
+              user?.owner ? item.label !== "Get Institute" : links
             )
             .map((item, i) => (
               <Link
@@ -93,19 +93,17 @@ const Header = (): React.ReactNode => {
             </>
           ) : (
             <div className="relative flex items-center gap-3">
-              {/* dashboard */}
-
-              {!user?.owner && (
+              {user?.owner && (
                 <Link
-                  href="/institute/dashboard"
-                  className="text-white hidden md:flex text-sm bg-transparent border-1 border-purple-600 px-4 py-2 rounded-full hover:bg-purple-700 transition-all duration-200"
+                  href={"/institute/dashboard"}
+                  className="text-white bg-transparent border-1 border-purple-600 px-4 py-2 rounded-full"
                 >
                   Dashboard
                 </Link>
               )}
 
               {/* Avatar */}
-              <div className="w-10 h-10 rounded-full overflow-hidden relative bg-gray-500 ring-2 ring-purple-500 animate-profile">
+              <div className="w-10 h-10 rounded-full overflow-hidden relative bg-gray-500 ring-2 ring-purple-500">
                 <Image
                   src="/intructor_1.jpg"
                   alt="Profile"
