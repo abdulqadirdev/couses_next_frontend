@@ -11,10 +11,14 @@ export default async function getCourses({
   params = "",
 }) {
   try {
-    console.log(params);
-    
+    console.log("params", params);
+
     let token = (await cookies()).get("auth-token")?.value;
     console.log(limit, page, featured, search, category);
+    let endpoint = params ? "institute-courses" : "courses";
+    params = params ? "/" + params : "";
+    let queries = `?limit=${limit}&page=${page}&search=${search}&featured=${featured}&category=${category}`;
+    console.log("hello=>>>>", endpoint + params + queries);
 
     const response = await useFetch({
       endpoint: endpoint + params + queries,
@@ -22,7 +26,6 @@ export default async function getCourses({
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("hello", response);
 
     if (response.success) {
       return {

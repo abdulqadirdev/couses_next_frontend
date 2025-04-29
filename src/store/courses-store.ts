@@ -51,6 +51,8 @@ const courseStore = create<CourseStore>((set) => ({
     console.log(params);
     
     const res: GetCoursesResponse = await getCourses(params);
+    console.log(res);
+    
     if (res.success) {
       set({
         courses2: res.data?.courses || [],

@@ -11,26 +11,29 @@ import {
   Menu,
 } from "lucide-react";
 import courseStore from "@/store/courses-store";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import userStore from "@/store/user-store";
 
 const Courses = () => {
   // Type the courses state using the Course type
   const { courses2, fetchAllCourses, pagination, loader2 } = courseStore();
+  const { user, fetchUser } = userStore();
   console.log(pagination);
-  const [currentCount, setCount] = useState<number>(1);
   const courses = courses2;
   const [search, setSearch] = useState<string>("");
+  const router = useRouter();
   const [queries, setQueries] = useState({
     search: "",
     limit: 5,
     page: 1,
   });
-  console.log(queries);
 
   useEffect(() => {
-    console.log(queries.page, pagination?.totalPages);
+    fetchUser();
+  }, []);
 
-    if (queries.page >= pagination?.totalPages) {
+  useEffect(() => {
+    if (queries.limit > pagination?.total) {
       setQueries((prev: any) => ({
         ...prev,
         page: 1,
@@ -40,8 +43,6 @@ const Courses = () => {
 
   useEffect(() => {
     let timeOut = setTimeout(() => {
-      console.log("completed word");
-
       setQueries((prev: any) => ({
         ...prev,
         ["search"]: search,
@@ -51,8 +52,16 @@ const Courses = () => {
   }, [search]);
 
   useEffect(() => {
-    setCount(courses2.length + 1)
-    fetchAllCourses(queries);
+    let query = "";
+    if (queries.limit) query += `?limit=${queries.limit}`;
+    if (queries.search) query += `&search=${queries.search}`;
+    if (queries.page) query += `&page=${queries.page}`;
+
+    router.push("/institute/courses" + query);
+    let obj = { ...queries, params: user?.owner };
+    console.log("obj===>", obj);
+
+    fetchAllCourses(obj);
   }, [queries]);
 
   const handlePagination = (type: string) => {
@@ -92,7 +101,7 @@ const Courses = () => {
   };
 
   return (
-    <div className="w-full px-2 sm:px-6 md:px-8 py-6 max-w-7xl mx-auto">
+    <div className="w-full px-2 sm:px-6 md:px-8  max-w-7xl mx-auto">
       {loader2 && (
         <div className="fixed top-0 left-0 z-20 h-screen w-full bg-white/10 flex justify-center items-center">
           <span className="loader"></span>
@@ -164,7 +173,7 @@ const Courses = () => {
               {courses.map((course, i) => (
                 <tr key={course._id} className="hover:bg-gray-50">
                   <td className="p-3 whitespace-nowrap text-sm text-gray-500">
-                    {currentCount + i}
+                    {(queries.page - 1) * queries.limit + i + 1}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
@@ -225,7 +234,7 @@ const Courses = () => {
               onClick={() => querySetter({ name: "page", value: i + 1 })}
               className={`px-2 sm:px-3 py-1 border border-gray-300 rounded-md text-xs sm:text-sm font-medium  ${
                 i + 1 == queries.page ? "bg-blue-700 text-white" : ""
-              } hover:bg-blue-700`}
+              } `}
             >
               {i + 1}
             </button>
