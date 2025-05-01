@@ -11,6 +11,7 @@ export default async function getOwnCourses({
   instituteId = "",
 }) {
   try {
+
     if (!instituteId) {
       return {
         success: false,

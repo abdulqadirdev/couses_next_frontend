@@ -19,8 +19,15 @@ import {
 import { usePathname } from "next/navigation";
 import userStore from "@/store/user-store";
 
+import { useEffect } from "react";
+import courseStore from "@/store/courses-store";
+
 const items = [
-  { title: "Dashboard", url: "/institute-dashboard/dashboard", icon: LayoutDashboard },
+  {
+    title: "Dashboard",
+    url: "/institute-dashboard/dashboard",
+    icon: LayoutDashboard,
+  },
   { title: "Courses", url: "/institute-dashboard/courses", icon: BookCopyIcon },
   { title: "Categories", url: "#", icon: Boxes },
   { title: "Course Materials", url: "#", icon: Files },
@@ -30,7 +37,11 @@ const items = [
 
 export function AppSidebar() {
   const path = usePathname();
-  const { logOutFunc } = userStore();
+  const { logOutFunc, fetchUser } = userStore();
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
 
   return (
     <Sidebar className="w-64 h-[100vh] fixed left-0 top-0 ">
