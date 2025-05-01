@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import userStore from "@/store/user-store";
+
 import { useEffect } from "react";
 import courseStore from "@/store/courses-store";
 
@@ -40,6 +41,7 @@ export function AppSidebar() {
   useEffect(() => {
     fetchUser();
   }, []);
+
 
   return (
     <Sidebar className="w-64 h-[100vh] fixed left-0 top-0 ">

@@ -114,6 +114,7 @@ const courseStore = create<CourseStore>((set) => ({
         });
       }
     } catch (err: any) {
+
       console.error(err);
       set({
         status: false,

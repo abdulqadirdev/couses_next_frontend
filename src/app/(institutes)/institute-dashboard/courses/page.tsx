@@ -20,6 +20,7 @@ const Courses = () => {
   const ownerId = user?.owner;
   const { ownCourses, pagination, loader, fetchOwnCourse, status } =
     courseStore();
+
   const courses = ownCourses;
   const [search, setSearch] = useState<string>("");
   const router = useRouter();
@@ -43,6 +44,7 @@ const Courses = () => {
       fetchOwnCourse(obj);
     }
   }, [queries]);
+
 
   useEffect(() => {
     if (queries.limit > pagination?.total) {
@@ -168,6 +170,7 @@ const Courses = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
+
               {courses.length > 0 ? (
                 courses.map((course, i) => (
                   <tr key={course._id} className="hover:bg-gray-50">
