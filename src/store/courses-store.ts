@@ -27,7 +27,7 @@ interface CourseStore {
   courses2: Course[];
   ownCourses: Course[];
   pagination: any;
-  status: boolean;
+  status: boolean | null;
   status2: boolean;
   error: string | null;
   error2: string | null;
@@ -43,7 +43,7 @@ const courseStore = create<CourseStore>((set) => ({
   courses2: [],
   ownCourses: [],
   pagination: {},
-  status: false,
+  status: null,
   status2: false,
   error: null,
   error2: null,
@@ -95,7 +95,6 @@ const courseStore = create<CourseStore>((set) => ({
 
   fetchOwnCourse: async (params) => {
     try {
-      console.log("check", params);
       set({ loader: true });
       const res: GetCoursesResponse = await getOwnCourses(params);
       console.log("own-course", res);
@@ -115,9 +114,10 @@ const courseStore = create<CourseStore>((set) => ({
         });
       }
     } catch (err: any) {
+      console.error(err);
       set({
-        // status: false,
-        // loader: false,
+        status: false,
+        loader: false,
         error: err.message || "Unexpected error while fetching courses",
       });
     }

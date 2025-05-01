@@ -13,11 +13,13 @@ import {
 import courseStore from "@/store/courses-store";
 import { useRouter } from "next/navigation";
 import userStore from "@/store/user-store";
+import { DialogModal } from "@/components/shadcn-components/modal-box";
 
 const Courses = () => {
-  const { user, fetchUser } = userStore();
+  const { user } = userStore();
   const ownerId = user?.owner;
-  const { ownCourses, pagination, loader, fetchOwnCourse } = courseStore();
+  const { ownCourses, pagination, loader, fetchOwnCourse, status } =
+    courseStore();
   const courses = ownCourses;
   const [search, setSearch] = useState<string>("");
   const router = useRouter();
@@ -28,8 +30,19 @@ const Courses = () => {
   });
 
   useEffect(() => {
-    fetchUser();
-  }, []);
+    if (ownerId) {
+      let query = "";
+      if (queries.limit) query += `?limit=${queries.limit}`;
+      if (queries.search) query += `&search=${queries.search}`;
+      if (queries.page) query += `&page=${queries.page}`;
+
+      router.push("/institute-dashboard/courses" + query);
+      let obj = { ...queries, instituteId: ownerId };
+      console.log("obj=>", obj);
+
+      fetchOwnCourse(obj);
+    }
+  }, [queries]);
 
   useEffect(() => {
     if (queries.limit > pagination?.total) {
@@ -50,20 +63,6 @@ const Courses = () => {
     }, 1000);
     return () => clearTimeout(timeOut);
   }, [search]);
-
-  useEffect(() => {
-    if (ownerId) {
-      alert()
-      let query = "";
-      if (queries.limit) query += `?limit=${queries.limit}`;
-      if (queries.search) query += `&search=${queries.search}`;
-      if (queries.page) query += `&page=${queries.page}`;
-
-      router.push("/institute-dashboard/courses" + query);
-      let obj = { ...queries, instituteId: ownerId };
-      fetchOwnCourse(obj);
-    }
-  }, [queries, ownerId]);
 
   const handlePagination = (type: string) => {
     if (type === "inc") {
@@ -114,9 +113,7 @@ const Courses = () => {
         <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
           Course Management
         </h1>
-        <button className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm sm:text-base">
-          Add New Course
-        </button>
+        <DialogModal title="Add Courses" modalTitle="Add Course" />
       </div>
 
       {/* Search and Limit Controls */}
@@ -171,44 +168,56 @@ const Courses = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {courses.map((course, i) => (
-                <tr key={course._id} className="hover:bg-gray-50">
-                  <td className="p-3 whitespace-nowrap text-sm text-gray-500">
-                    {(queries.page - 1) * queries.limit + i + 1}
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {course.title}
-                    </div>
-                  </td>
-                  <td className="p-3 whitespace-nowrap text-sm text-gray-500">
-                    {formatDate(course.createdAt)}
-                  </td>
-                  <td className="p-3 whitespace-nowrap text-sm font-medium">
-                    <div className="flex space-x-2">
-                      <button
-                        className="text-blue-600 hover:text-blue-900"
-                        title="View"
-                      >
-                        <Eye size={16} />
-                      </button>
-                      <button
-                        className="text-green-600 hover:text-green-900"
-                        title="Edit"
-                      >
-                        <Pencil size={16} />
-                      </button>
-                      <button
-                        className="text-red-600 hover:text-red-900"
-                        title="Delete"
-                        // onClick={() => deleteCourse(course.id)}
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {courses.length > 0 ? (
+                courses.map((course, i) => (
+                  <tr key={course._id} className="hover:bg-gray-50">
+                    <td className="p-3 whitespace-nowrap text-sm text-gray-500">
+                      {(queries.page - 1) * queries.limit + i + 1}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">
+                        {course.title}
+                      </div>
+                    </td>
+                    <td className="p-3 whitespace-nowrap text-sm text-gray-500">
+                      {formatDate(course.createdAt)}
+                    </td>
+                    <td className="p-3 whitespace-nowrap text-sm font-medium">
+                      <div className="flex space-x-2">
+                        <button
+                          className="text-blue-600 hover:text-blue-900"
+                          title="View"
+                        >
+                          <Eye size={16} />
+                        </button>
+                        <button
+                          className="text-green-600 hover:text-green-900"
+                          title="Edit"
+                        >
+                          <Pencil size={16} />
+                        </button>
+                        <button
+                          className="text-red-600 hover:text-red-900"
+                          title="Delete"
+                          // onClick={() => deleteCourse(course.id)}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                <td
+                  colSpan={4}
+                  className="text-center py-6 text-sm text-gray-500 font-medium"
+                >
+                  {status === null ? "Data fetching!" : "No Data Found!"}
+                </td>
+              </tr>
+              
+              )}
             </tbody>
           </table>
         </div>
