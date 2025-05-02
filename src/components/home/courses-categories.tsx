@@ -30,7 +30,7 @@ const CoursesWithCategories = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    filteredCourse({ category: activeCategory }).finally(() =>
+    filteredCourse({ category: activeCategory,featured:false }).finally(() =>
       setIsLoading(false)
     );
   }, [activeCategory]);

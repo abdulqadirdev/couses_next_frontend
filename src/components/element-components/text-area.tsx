@@ -1,10 +1,15 @@
-const TextArea = (props: any) => {
+import { forwardRef } from "react";
+
+const TextArea = forwardRef(({ className, ...props }: any, ref) => {
   return (
     <textarea
+      ref={ref}
+      className={`resize-none ${className}`}
       {...props}
-      className="col-span-3 resize-none border border-gray-300 rounded-md px-3 py-2 text-sm shadow-sm focus:outline-none"
     />
   );
-};
+});
 
-export default TextArea
+TextArea.displayName = "TextArea";
+
+export default TextArea;

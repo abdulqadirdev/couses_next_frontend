@@ -6,57 +6,35 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import CourseForm from "../institute/courses-add-form";
 
 interface Props {
-  title: string;
+  message?: string;
   modalTitle: string;
+  children?: React.ReactNode;
+  open: boolean;
+  onClose: () => void;
+  btnText?:string
 }
+
 export function DialogModal({
-  title = "Edit Profile",
+  message = "",
   modalTitle = "Edit Profile",
+  children,
+  open,
+  onClose,
+  btnText="Save changes"
 }: Props) {
   return (
-    <Dialog >
-      <DialogTrigger asChild>
-        <Button variant="outline">{title}</Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
           <DialogTitle>{modalTitle}</DialogTitle>
-          <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
-          </DialogDescription>
+          <DialogDescription className="text-lg">{message}</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <CourseForm />
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input
-              id="name"
-              defaultValue="Pedro Duarte"
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              Username
-            </Label>
-            <Input
-              id="username"
-              defaultValue="@peduarte"
-              className="col-span-3"
-            />
-          </div>
-        </div>
+        <div className="grid gap-4 py-4">{children}</div>
         <DialogFooter>
-          <Button type="submit">Save changes</Button>
+          <Button type="submit">{btnText}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

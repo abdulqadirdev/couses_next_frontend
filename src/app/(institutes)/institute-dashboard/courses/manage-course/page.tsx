@@ -14,13 +14,18 @@ import courseStore from "@/store/courses-store";
 import { useRouter } from "next/navigation";
 import userStore from "@/store/user-store";
 import { DialogModal } from "@/components/shadcn-components/modal-box";
-
+import Link from "next/link";
+import deleteCourse from "@/apis/courses/delete-course";
 const Courses = () => {
   const { user } = userStore();
   const ownerId = user?.owner;
   const { ownCourses, pagination, loader, fetchOwnCourse, status } =
     courseStore();
-
+  const [open, setOpen] = useState<boolean>(false);
+  const [selectedCourse, setCourse] = useState<Object>({});
+  const toggleModal = () => {
+    setOpen(!open);
+  };
   const courses = ownCourses;
   const [search, setSearch] = useState<string>("");
   const router = useRouter();
@@ -37,14 +42,13 @@ const Courses = () => {
       if (queries.search) query += `&search=${queries.search}`;
       if (queries.page) query += `&page=${queries.page}`;
 
-      router.push("/institute-dashboard/courses" + query);
+      router.push("manage-course" + query);
       let obj = { ...queries, instituteId: ownerId };
       console.log("obj=>", obj);
 
       fetchOwnCourse(obj);
     }
   }, [queries]);
-
 
   useEffect(() => {
     if (queries.limit > pagination?.total) {
@@ -115,7 +119,12 @@ const Courses = () => {
         <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
           Course Management
         </h1>
-        <DialogModal title="Add Courses" modalTitle="Add Course" />
+        <Link
+          href={"add-course"}
+          className="border-1 border-gray-300 py-2 px-4 rounded-lg text-sm"
+        >
+          Add Course
+        </Link>
       </div>
 
       {/* Search and Limit Controls */}
@@ -170,7 +179,6 @@ const Courses = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-
               {courses.length > 0 ? (
                 courses.map((course, i) => (
                   <tr key={course._id} className="hover:bg-gray-50">
@@ -200,9 +208,9 @@ const Courses = () => {
                           <Pencil size={16} />
                         </button>
                         <button
+                          onClick={() => setOpen(true)}
                           className="text-red-600 hover:text-red-900"
                           title="Delete"
-                          // onClick={() => deleteCourse(course.id)}
                         >
                           <Trash2 size={16} />
                         </button>
@@ -212,17 +220,24 @@ const Courses = () => {
                 ))
               ) : (
                 <tr>
-                <td
-                  colSpan={4}
-                  className="text-center py-6 text-sm text-gray-500 font-medium"
-                >
-                  {status === null ? "Data fetching!" : "No Data Found!"}
-                </td>
-              </tr>
-              
+                  <td
+                    colSpan={4}
+                    className="text-center py-6 text-sm text-gray-500 font-medium"
+                  >
+                    {status === null ? "Data fetching!" : "No Data Found!"}
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
+          {open && (
+            <DialogModal
+              modalTitle="Confirm Box"
+              open={open}
+              onClose={toggleModal}
+              message="Are you sure you want to delete this course!"
+            />
+          )}
         </div>
       </div>
 
