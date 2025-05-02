@@ -13,9 +13,9 @@ import {
 interface DataProp {
   title: string;
 }
-export function SelectInp({ className, data, ...props }: any) {
+export function SelectInp({ className, data, value, onChange, ...props }: any) {
   return (
-    <Select>
+    <Select value={value} onValueChange={onChange}>
       <SelectTrigger className={`w-full ${className || ""}`} {...props}>
         <SelectValue placeholder="Select a level" />
       </SelectTrigger>
@@ -23,7 +23,7 @@ export function SelectInp({ className, data, ...props }: any) {
         <SelectGroup>
           <SelectLabel>Select Level</SelectLabel>
           {data.map((elem: DataProp, i: number) => (
-            <SelectItem key={i} value={elem.title.toLowerCase()}>
+            <SelectItem key={i} value={elem.title}>
               {elem.title}
             </SelectItem>
           ))}

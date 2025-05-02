@@ -1,20 +1,19 @@
 "use server";
+import { cookies } from "next/headers";
 import useFetch from "../../hooks/useFetch";
 
-export default async function getCourses({
-  limit = 15,
-  page = 1,
-  search = "",
-  featured = "",
-  category = "",
-}) {
+export default async function uploadFile(file) {
   try {
-
-    let endpoint = "courses";
-    let queries = `?limit=${limit}&page=${page}&search=${search}&featured=${featured}&category=${category}`;
+    let token = (await cookies()).get("auth-token")?.value;
+    console.log("fileGot=>>>", file);
 
     const response = await useFetch({
-      endpoint: endpoint + queries,
+      endpoint: "upload-file",
+      method: "POST",
+      data: file,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
     console.log("hello", response);
 
@@ -22,7 +21,6 @@ export default async function getCourses({
       return {
         success: true,
         data: response?.data?.data,
-        pagination: response?.data?.pagination,
       };
     } else {
       return {
@@ -33,7 +31,7 @@ export default async function getCourses({
   } catch (error) {
     return {
       success: false,
-      error: error.message || "Login failed",
+      error: error.message || "Failed to upload file!",
     };
   }
 }
