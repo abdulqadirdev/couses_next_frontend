@@ -41,7 +41,6 @@ const Courses = () => {
       if (queries.limit) query += `?limit=${queries.limit}`;
       if (queries.search) query += `&search=${queries.search}`;
       if (queries.page) query += `&page=${queries.page}`;
-
       router.push("manage-course" + query);
       let obj = { ...queries, instituteId: ownerId };
       console.log("obj=>", obj);
