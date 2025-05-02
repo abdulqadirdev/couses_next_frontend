@@ -16,20 +16,41 @@ import userStore from "@/store/user-store";
 import { DialogModal } from "@/components/shadcn-components/modal-box";
 import Link from "next/link";
 import deleteCourse from "@/apis/courses/delete-course";
+import CustomToastMsg from "@/components/toast-message";
+import setMessageState from "@/helper/message-set";
 const Courses = () => {
   const { user } = userStore();
   const ownerId = user?.owner;
   const { ownCourses, pagination, loader, fetchOwnCourse, status } =
     courseStore();
   const [open, setOpen] = useState<boolean>(false);
-  const [selectedCourse, setCourse] = useState<Object>({});
+  const [selectedCourse, setCourse] = useState<{ title: string; _id: string }>({
+    title: "",
+    _id: "",
+  });
+
   const toggleModal = () => {
     setOpen(!open);
   };
+
   const courses = ownCourses;
   const [search, setSearch] = useState<string>("");
+  const [message, setMessage] = useState<{
+    error: boolean;
+    message: string;
+  }>({
+    error: false,
+    message: "",
+  });
   const router = useRouter();
-  const [queries, setQueries] = useState({
+
+  interface QueriesType {
+    search: string;
+    limit: number;
+    page: number;
+    [key: string]: string | number;
+  }
+  const [queries, setQueries] = useState<QueriesType>({
     search: "",
     limit: 5,
     page: 1,
@@ -37,17 +58,18 @@ const Courses = () => {
 
   useEffect(() => {
     if (ownerId) {
-      let query = "";
-      if (queries.limit) query += `?limit=${queries.limit}`;
-      if (queries.search) query += `&search=${queries.search}`;
-      if (queries.page) query += `&page=${queries.page}`;
-      router.push("manage-course" + query);
+      let searchParams = new URLSearchParams();
+      for (const key in queries) {
+        if (queries[key]) {
+          searchParams.append(key, queries[key].toString());
+        }
+      }
+      router.push("manage-course?" + searchParams.toString());
       let obj = { ...queries, instituteId: ownerId };
-      console.log("obj=>", obj);
 
       fetchOwnCourse(obj);
     }
-  }, [queries]);
+  }, [queries, message.message]);
 
   useEffect(() => {
     if (queries.limit > pagination?.total) {
@@ -69,19 +91,29 @@ const Courses = () => {
     return () => clearTimeout(timeOut);
   }, [search]);
 
+  const handleDelete = async () => {
+    try {
+      let res = await deleteCourse(selectedCourse._id);
+      setMessageState(res, setMessage);
+      toggleModal();
+    } catch (error) {
+      setMessage({ error: true, message: "Something went wrong!" });
+    }
+  };
+
   const handlePagination = (type: string) => {
     if (type === "inc") {
       if (queries.page < pagination?.totalPages) {
         setQueries((prev: any) => ({
           ...prev,
-          ["page"]: queries.page + 1,
+          page: queries.page + 1,
         }));
       }
     } else {
       if (queries.page > 0 && queries.page <= pagination?.totalPages) {
         setQueries((prev: any) => ({
           ...prev,
-          ["page"]: queries.page - 1,
+          page: queries.page - 1,
         }));
       }
     }
@@ -111,6 +143,11 @@ const Courses = () => {
         <div className="fixed top-0 left-0 z-20 h-screen w-full bg-white/10 flex justify-center items-center">
           <span className="loader-2"></span>
         </div>
+      )}
+      {message.message && (
+        <CustomToastMsg error={message.error} toastReset={setMessage}>
+          {message.message}
+        </CustomToastMsg>
       )}
       <Menu className="block md:hidden" />
       {/* Header */}
@@ -207,7 +244,10 @@ const Courses = () => {
                           <Pencil size={16} />
                         </button>
                         <button
-                          onClick={() => setOpen(true)}
+                          onClick={() => {
+                            setOpen(true);
+                            setCourse(course);
+                          }}
                           className="text-red-600 hover:text-red-900"
                           title="Delete"
                         >
@@ -234,7 +274,9 @@ const Courses = () => {
               modalTitle="Confirm Box"
               open={open}
               onClose={toggleModal}
-              message="Are you sure you want to delete this course!"
+              message={`Are you sure you want to delete ${selectedCourse?.title} course!`}
+              btnText={"Delete Course"}
+              onClick={handleDelete}
             />
           )}
         </div>

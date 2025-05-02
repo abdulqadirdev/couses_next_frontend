@@ -14,7 +14,10 @@ interface Props {
   children?: React.ReactNode;
   open: boolean;
   onClose: () => void;
-  btnText?:string
+  btnText?: string;
+  onClick?: () => void;
+  loader?: boolean;
+  loaderMessage?: string;
 }
 
 export function DialogModal({
@@ -23,7 +26,10 @@ export function DialogModal({
   children,
   open,
   onClose,
-  btnText="Save changes"
+  btnText = "Save changes",
+  onClick,
+  loader = false,
+  loaderMessage = "",
 }: Props) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -34,7 +40,9 @@ export function DialogModal({
         </DialogHeader>
         <div className="grid gap-4 py-4">{children}</div>
         <DialogFooter>
-          <Button type="submit">{btnText}</Button>
+          <Button type="submit" onClick={onClick}>
+            {loader ? loaderMessage : btnText}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

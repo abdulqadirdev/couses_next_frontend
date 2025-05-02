@@ -43,10 +43,10 @@ export default function RootLayout({
               </header>
 
               {/* Main Content */}
-              <div className="bg-white/5 m-4  h-[90vh]  flex items-center  overflow-y-auto transition-all duration-300">
+              <div className="mx-4 my-0  h-[90vh]  overflow-y-auto transition-all duration-300">
                 <div
-                  className="backdrop-blur-sm border border-white/10 
-              shadow-xl w-full py-10 rounded-3xl"
+                  className="bg-white/5  backdrop-blur-sm border border-white/10 
+              shadow-xl w-full py-5 rounded-3xl"
                 >
                   {children}
                 </div>
