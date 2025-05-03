@@ -1,34 +1,20 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Calendar, Award, Clock, TrendingUp } from "lucide-react";
 import courseStore from "@/store/courses-store";
 import Skeleton from "./cardSkeleton";
 import CourseCard from "./course-card";
 
 interface Category {
-  slug: string;
   name: string;
 }
 
 const CoursesWithCategories = () => {
-  const { filteredCourse, courses, fetchCategories,category } = courseStore();
-  console.log(category);
-  
+  const { filteredCourse, courses, category, fetchCategories } = courseStore();
+
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
-  console.log(courses);
 
-  const categories: Category[] = [
-    { slug: "", name: "All Courses" },
-    { slug: "data-science", name: "Data Science" },
-    { slug: "development", name: "Web Development" },
-    { slug: "design", name: "Design & UX" },
-    { slug: "marketing", name: "Marketing" },
-    { slug: "security", name: "Cybersecurity" },
-  ];
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -39,6 +25,8 @@ const CoursesWithCategories = () => {
       setIsLoading(false)
     );
   }, [activeCategory]);
+
+  const categories: Category[] = category;
 
   return (
     <section className="relative w-full py-24 overflow-hidden bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800">
@@ -71,26 +59,43 @@ const CoursesWithCategories = () => {
 
         {/* Category Filters */}
         <div className="flex flex-wrap justify-center gap-3 mb-16">
-          {categories.map((category) => (
-            <button
-              key={category.slug}
-              onClick={() => setActiveCategory(category.slug)}
-              className={`relative overflow-hidden rounded-full px-6 py-2.5 text-sm font-medium transition-all duration-300
-              ${
-                activeCategory === category.slug
-                  ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/20"
-                  : "bg-gray-800/80 text-gray-300 hover:bg-gray-700/80 border border-gray-700/50 hover:border-purple-500/30"
-              }`}
-            >
-              {activeCategory === category.slug && (
-                <>
-                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-600 to-pink-600 opacity-50"></span>
-                  <span className="absolute -inset-x-full bottom-0 h-px w-[200%] bg-gradient-to-r from-transparent via-pink-500 to-transparent animate-shimmer"></span>
-                </>
-              )}
-              <span className="relative z-10">{category.name}</span>
-            </button>
-          ))}
+          <button
+            onClick={() => setActiveCategory("")}
+            className={`relative overflow-hidden rounded-full px-6 py-2.5 text-sm font-medium transition-all duration-300
+                  ${
+                    !activeCategory
+                      ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/20"
+                      : "bg-gray-800/80 text-gray-300 hover:bg-gray-700/80 border border-gray-700/50 hover:border-purple-500/30"
+                  }`}
+          >
+            All Courses
+          </button>
+          {categories.map((category, index) => {
+            const key = category.name || `category-${index}`;
+            const displaySlug =
+              category.name.split(" ").join("-").toLowerCase() || "";
+
+            return (
+              <button
+                key={key}
+                onClick={() => setActiveCategory(displaySlug)}
+                className={`relative overflow-hidden rounded-full px-6 py-2.5 text-sm font-medium transition-all duration-300
+                  ${
+                    activeCategory === displaySlug
+                      ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/20"
+                      : "bg-gray-800/80 text-gray-300 hover:bg-gray-700/80 border border-gray-700/50 hover:border-purple-500/30"
+                  }`}
+              >
+                {activeCategory === displaySlug && (
+                  <>
+                    <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-600 to-pink-600 opacity-50"></span>
+                    <span className="absolute -inset-x-full bottom-0 h-px w-[200%] bg-gradient-to-r from-transparent via-pink-500 to-transparent animate-shimmer"></span>
+                  </>
+                )}
+                <span className="relative z-10">{category.name}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Courses Grid */}

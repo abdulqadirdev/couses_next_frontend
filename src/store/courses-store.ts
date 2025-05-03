@@ -24,6 +24,7 @@ interface GetCoursesResponse {
     courses: Course[];
     pagination: any;
     course: Course;
+    categories: {name:string};
   };
   error?: string;
 }
@@ -178,10 +179,10 @@ const courseStore = create<CourseStore>((set) => ({
       set({ loader: true });
       const res: GetCoursesResponse = await getCategories();
       console.log(res);
-
+  
       if (res.success) {
         set({
-          category: res?.data.category,
+          category: res.data?.category || [],
           loader: false,
           status: true,
           error: null,
@@ -190,7 +191,7 @@ const courseStore = create<CourseStore>((set) => ({
         set({
           status: false,
           loader: false,
-          error: res.error || "Failed to fetch course",
+          error: res.error || "Failed to fetch categories",
         });
       }
     } catch (error: any) {
@@ -198,10 +199,11 @@ const courseStore = create<CourseStore>((set) => ({
       set({
         status: false,
         loader: false,
-        error: error.message || "Unexpected error while fetching course",
+        error: error.message || "Unexpected error while fetching categories",
       });
     }
-  },
+  }
+  
 }));
 
 export default courseStore;
