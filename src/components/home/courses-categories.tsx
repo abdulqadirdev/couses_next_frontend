@@ -9,28 +9,33 @@ import Skeleton from "./cardSkeleton";
 import CourseCard from "./course-card";
 
 interface Category {
-  id: string;
+  slug: string;
   name: string;
 }
 
 const CoursesWithCategories = () => {
-  const { filteredCourse, courses } = courseStore();
+  const { filteredCourse, courses, fetchCategories,category } = courseStore();
+  console.log(category);
+  
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   console.log(courses);
 
   const categories: Category[] = [
-    { id: "", name: "All Courses" },
-    { id: "data-science", name: "Data Science" },
-    { id: "development", name: "Web Development" },
-    { id: "design", name: "Design & UX" },
-    { id: "marketing", name: "Marketing" },
-    { id: "security", name: "Cybersecurity" },
+    { slug: "", name: "All Courses" },
+    { slug: "data-science", name: "Data Science" },
+    { slug: "development", name: "Web Development" },
+    { slug: "design", name: "Design & UX" },
+    { slug: "marketing", name: "Marketing" },
+    { slug: "security", name: "Cybersecurity" },
   ];
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     setIsLoading(true);
-    filteredCourse({ category: activeCategory,featured:false }).finally(() =>
+    filteredCourse({ category: activeCategory, featured: false }).finally(() =>
       setIsLoading(false)
     );
   }, [activeCategory]);
@@ -68,16 +73,16 @@ const CoursesWithCategories = () => {
         <div className="flex flex-wrap justify-center gap-3 mb-16">
           {categories.map((category) => (
             <button
-              key={category.id}
-              onClick={() => setActiveCategory(category.id)}
+              key={category.slug}
+              onClick={() => setActiveCategory(category.slug)}
               className={`relative overflow-hidden rounded-full px-6 py-2.5 text-sm font-medium transition-all duration-300
               ${
-                activeCategory === category.id
+                activeCategory === category.slug
                   ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/20"
                   : "bg-gray-800/80 text-gray-300 hover:bg-gray-700/80 border border-gray-700/50 hover:border-purple-500/30"
               }`}
             >
-              {activeCategory === category.id && (
+              {activeCategory === category.slug && (
                 <>
                   <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-600 to-pink-600 opacity-50"></span>
                   <span className="absolute -inset-x-full bottom-0 h-px w-[200%] bg-gradient-to-r from-transparent via-pink-500 to-transparent animate-shimmer"></span>

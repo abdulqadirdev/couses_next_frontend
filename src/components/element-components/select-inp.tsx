@@ -13,9 +13,17 @@ import {
 interface DataProp {
   title: string;
 }
-export function SelectInp({ className, data, value, onChange, ...props }: any) {
+export function SelectInp({
+  className,
+  data,
+  value,
+  onChange,
+  defaultValue,
+  ...props
+}: any) {
+  
   return (
-    <Select value={value} onValueChange={onChange}>
+    <Select value={value} onValueChange={onChange} defaultValue={defaultValue}>
       <SelectTrigger className={`w-full ${className || ""}`} {...props}>
         <SelectValue placeholder="Select a level" />
       </SelectTrigger>

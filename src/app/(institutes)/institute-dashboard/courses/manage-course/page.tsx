@@ -18,11 +18,12 @@ import Link from "next/link";
 import deleteCourse from "@/apis/courses/delete-course";
 import CustomToastMsg from "@/components/toast-message";
 import setMessageState from "@/helper/message-set";
+import { Button } from "@/components/ui/button";
 const Courses = () => {
   const { user } = userStore();
   const ownerId = user?.owner;
-  const { ownCourses, pagination, loader, fetchOwnCourse, status } =
-    courseStore();
+  const { ownCourses, pagination,loader, fetchOwnCourse, status } = courseStore();
+  const [isDeleted, setDeleted] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
   const [selectedCourse, setCourse] = useState<{ title: string; _id: string }>({
     title: "",
@@ -93,7 +94,9 @@ const Courses = () => {
 
   const handleDelete = async () => {
     try {
+      setDeleted(true);
       let res = await deleteCourse(selectedCourse._id);
+      setDeleted(false);
       setMessageState(res, setMessage);
       toggleModal();
     } catch (error) {
@@ -163,7 +166,6 @@ const Courses = () => {
         </Link>
       </div>
 
-      {/* Search and Limit Controls */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
         <div className="relative w-full sm:w-64">
           <input
@@ -193,7 +195,6 @@ const Courses = () => {
         </div>
       </div>
 
-      {/* Table for larger screens */}
       <div className="bg-white rounded-lg shadow overflow-hidden w-full">
         <div className="overflow-x-auto w-full">
           <table className="min-w-full divide-y divide-gray-200">
@@ -231,28 +232,25 @@ const Courses = () => {
                     </td>
                     <td className="p-3 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
-                        <button
-                          className="text-blue-600 hover:text-blue-900"
-                          title="View"
-                        >
-                          <Eye size={16} />
-                        </button>
-                        <button
-                          className="text-green-600 hover:text-green-900"
+                        <Button
+                          onClick={() =>
+                            router.push(`update-course/${course._id}`)
+                          }
+                          className="text-white bg-blue-400"
                           title="Edit"
                         >
                           <Pencil size={16} />
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           onClick={() => {
                             setOpen(true);
                             setCourse(course);
                           }}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-white  bg-red-400"
                           title="Delete"
                         >
                           <Trash2 size={16} />
-                        </button>
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -277,12 +275,13 @@ const Courses = () => {
               message={`Are you sure you want to delete ${selectedCourse?.title} course!`}
               btnText={"Delete Course"}
               onClick={handleDelete}
+              loader={isDeleted}
+              loaderMessage="Deleting Message..."
             />
           )}
         </div>
       </div>
 
-      {/* Pagination */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 bg-white rounded-lg shadow px-4 py-3">
         <div className="text-xs sm:text-sm text-gray-500 order-2 sm:order-1">
           Showing <span className="font-medium">{pagination?.page}</span> to{" "}
