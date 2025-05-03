@@ -18,22 +18,26 @@ import Link from "next/link";
 import deleteCourse from "@/apis/courses/delete-course";
 import CustomToastMsg from "@/components/toast-message";
 import setMessageState from "@/helper/message-set";
+
 const Courses = () => {
   const { user } = userStore();
   const ownerId = user?.owner;
   const { ownCourses, pagination, loader, fetchOwnCourse, status } =
     courseStore();
-  const [open, setOpen] = useState<boolean>(false);
+  const courses = ownCourses;
+  const [open, setOpen] = useState<any>({
+    deleted: false,
+  });
   const [selectedCourse, setCourse] = useState<{ title: string; _id: string }>({
     title: "",
     _id: "",
   });
+  const [loader2, setLoader2] = useState<boolean>(false);
 
-  const toggleModal = () => {
-    setOpen(!open);
+  const toggleModal = (dialog: string) => {
+    setOpen((prev: object) => ({ ...prev, [dialog]: !open[dialog] }));
   };
 
-  const courses = ownCourses;
   const [search, setSearch] = useState<string>("");
   const [message, setMessage] = useState<{
     error: boolean;
@@ -72,7 +76,7 @@ const Courses = () => {
   }, [queries, message.message]);
 
   useEffect(() => {
-    if (queries.limit > pagination?.total) {
+    if (queries.limit > pagination?.total){
       setQueries((prev: any) => ({
         ...prev,
         page: 1,
@@ -93,9 +97,11 @@ const Courses = () => {
 
   const handleDelete = async () => {
     try {
+      setLoader2(true);
       let res = await deleteCourse(selectedCourse._id);
+      setLoader2(false);
       setMessageState(res, setMessage);
-      toggleModal();
+      toggleModal({ ...open });
     } catch (error) {
       setMessage({ error: true, message: "Something went wrong!" });
     }
@@ -197,19 +203,19 @@ const Courses = () => {
       <div className="bg-white rounded-lg shadow overflow-hidden w-full">
         <div className="overflow-x-auto w-full">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="bg-purple-600 text-white">
               <tr>
-                <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="p-3 text-left text-xs font-medium  uppercase tracking-wider">
                   S.No
                 </th>
-                <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="p-3 text-left text-xs font-medium uppercase tracking-wider">
                   Course Name
                 </th>
-                <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="p-3 text-left text-xs font-medium  uppercase tracking-wider">
                   Created On
                 </th>
 
-                <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="p-3 text-left text-xs font-medium  uppercase tracking-wider">
                   Action
                 </th>
               </tr>
@@ -245,7 +251,7 @@ const Courses = () => {
                         </button>
                         <button
                           onClick={() => {
-                            setOpen(true);
+                            setOpen("deleted");
                             setCourse(course);
                           }}
                           className="text-red-600 hover:text-red-900"
@@ -273,10 +279,12 @@ const Courses = () => {
             <DialogModal
               modalTitle="Confirm Box"
               open={open}
-              onClose={toggleModal}
+              onClose={() => toggleModal("deleted")}
               message={`Are you sure you want to delete ${selectedCourse?.title} course!`}
               btnText={"Delete Course"}
               onClick={handleDelete}
+              loader={loader2}
+              loaderMessage="Deleting Course..."
             />
           )}
         </div>
