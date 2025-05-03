@@ -1,12 +1,14 @@
 import { create } from "zustand";
 import getCourses from "@/apis/courses";
 import getOwnCourses from "@/apis/courses/own-course";
+import getSingleCourse from "@/apis/courses/single-course";
+import getCategories from "@/apis/courses/categories-fetch";
 
 export interface Course {
   _id: string;
   title: string;
   description: string;
-  image: string | null;
+  image: string | null | undefined;
   level: string;
   category: string;
   createdBy: { instituteName: string; instituteLogo: string };
@@ -18,11 +20,25 @@ export interface Course {
 
 interface GetCoursesResponse {
   success: boolean;
-  data?: { courses: Course[]; pagination: any };
+  data?: {
+    courses: Course[];
+    pagination: any;
+    course: Course;
+    categories: {name:string};
+  };
   error?: string;
 }
 
+interface CategoriesType {
+  name: string;
+  _id: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface CourseStore {
+  singleCourse: Course | null;
+  category: CategoriesType[];
   courses: Course[];
   courses2: Course[];
   ownCourses: Course[];
@@ -36,11 +52,14 @@ interface CourseStore {
   fetchAllCourses: (params: any) => Promise<void>;
   filteredCourse: (params: any) => Promise<void>;
   fetchOwnCourse: (params: any) => Promise<void>;
+  fetchSingleCourse: (id: any) => Promise<void>;
+  fetchCategories: () => Promise<void>;
 }
 
 const courseStore = create<CourseStore>((set) => ({
   courses: [],
   courses2: [],
+  category: [],
   ownCourses: [],
   pagination: {},
   status: null,
@@ -49,7 +68,7 @@ const courseStore = create<CourseStore>((set) => ({
   error2: null,
   loader: false,
   loader2: false,
-
+  singleCourse: null,
   filteredCourse: async (params) => {
     set({ loader: true });
     const res: GetCoursesResponse = await getCourses(params ? params : {});
@@ -114,7 +133,6 @@ const courseStore = create<CourseStore>((set) => ({
         });
       }
     } catch (err: any) {
-
       console.error(err);
       set({
         status: false,
@@ -123,6 +141,69 @@ const courseStore = create<CourseStore>((set) => ({
       });
     }
   },
+
+  fetchSingleCourse: async (id) => {
+    try {
+      console.log(id);
+
+      set({ loader: true });
+      const res: GetCoursesResponse = await getSingleCourse({ id });
+      console.log(res);
+
+      if (res.success) {
+        set({
+          singleCourse: res.data?.course,
+          loader: false,
+          status: true,
+          error: null,
+        });
+      } else {
+        set({
+          status: false,
+          loader: false,
+          error: res.error || "Failed to fetch course",
+        });
+      }
+    } catch (error: any) {
+      console.error(error);
+      set({
+        status: false,
+        loader: false,
+        error: error.message || "Unexpected error while fetching course",
+      });
+    }
+  },
+
+  fetchCategories: async () => {
+    try {
+      set({ loader: true });
+      const res: GetCoursesResponse = await getCategories();
+      console.log(res);
+  
+      if (res.success) {
+        set({
+          category: res.data?.category || [],
+          loader: false,
+          status: true,
+          error: null,
+        });
+      } else {
+        set({
+          status: false,
+          loader: false,
+          error: res.error || "Failed to fetch categories",
+        });
+      }
+    } catch (error: any) {
+      console.error(error);
+      set({
+        status: false,
+        loader: false,
+        error: error.message || "Unexpected error while fetching categories",
+      });
+    }
+  }
+  
 }));
 
 export default courseStore;
