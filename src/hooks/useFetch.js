@@ -12,7 +12,7 @@ export default async function useFetch(ReqConfig) {
   } = ReqConfig;
 
   const url = process.env.API_URL + endpoint;
-  console.log("url=>>", url, headers);
+  console.log("url=>>", url);
 
   try {
     const response = await axios({

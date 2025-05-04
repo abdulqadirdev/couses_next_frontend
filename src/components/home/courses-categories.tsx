@@ -4,9 +4,11 @@ import { useState, useEffect } from "react";
 import courseStore from "@/store/courses-store";
 import Skeleton from "./cardSkeleton";
 import CourseCard from "./course-card";
+import ButtonSkeleton from "./button-skeleton";
+import getSlug from "@/helper/get-slug";
 
 interface Category {
-  name: string;
+  title: string;
 }
 
 const CoursesWithCategories = () => {
@@ -14,10 +16,14 @@ const CoursesWithCategories = () => {
 
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoading2, setIsLoading2] = useState(false);
+  console.log(activeCategory);
 
   useEffect(() => {
-    fetchCategories();
+    setIsLoading2(true);
+    fetchCategories().finally(() => setIsLoading2(false));
   }, []);
+  console.log(category);
 
   useEffect(() => {
     setIsLoading(true);
@@ -70,10 +76,10 @@ const CoursesWithCategories = () => {
           >
             All Courses
           </button>
+          {isLoading2 && <ButtonSkeleton />}
           {categories.map((category, index) => {
-            const key = category.name || `category-${index}`;
-            const displaySlug =
-              category.name.split(" ").join("-").toLowerCase() || "";
+            const key = category.title || `category-${index}`;
+            const displaySlug =getSlug(category.title);
 
             return (
               <button
@@ -92,7 +98,7 @@ const CoursesWithCategories = () => {
                     <span className="absolute -inset-x-full bottom-0 h-px w-[200%] bg-gradient-to-r from-transparent via-pink-500 to-transparent animate-shimmer"></span>
                   </>
                 )}
-                <span className="relative z-10">{category.name}</span>
+                <span className="relative z-10">{category.title}</span>
               </button>
             );
           })}

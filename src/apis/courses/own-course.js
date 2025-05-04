@@ -8,11 +8,11 @@ export default async function getOwnCourses({
   search = "",
   category = "",
   featured = "",
-  instituteId = "",
+  id = "",
 }) {
   try {
 
-    if (!instituteId) {
+    if (!id) {
       return {
         success: false,
         error: "Institute Id is not provided",
@@ -22,7 +22,7 @@ export default async function getOwnCourses({
     let token = (await cookies()).get("auth-token")?.value;
 
     let queries = `limit=${limit}&page=${page}&search=${search}&featured=${featured}&category=${category}`;
-    const endpoint = `institute-courses/${instituteId}?${queries}`;
+    const endpoint = `institute-courses/${id}?${queries}`;
 console.log(endpoint);
 
     const response = await useFetch({

@@ -14,7 +14,7 @@ const NoteSection = () => {
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Link
-              href="#"
+              href="signup"
               className="group relative inline-flex items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 p-0.5 text-sm font-medium text-white hover:text-white focus:outline-none focus:ring-4 focus:ring-purple-800"
             >
               <span className="relative rounded-md bg-gray-900 px-5 py-2.5 transition-all duration-300 ease-in-out group-hover:bg-opacity-0">

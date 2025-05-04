@@ -9,6 +9,7 @@ export default async function getCourses({
   category = "",
 }) {
   try {
+console.log("categories",category);
 
     let endpoint = "courses";
     let queries = `?limit=${limit}&page=${page}&search=${search}&featured=${featured}&category=${category}`;

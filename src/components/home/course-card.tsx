@@ -1,3 +1,4 @@
+import resetSlug from "@/helper/reset-slug";
 import { Course } from "@/store/courses-store";
 import { Award, Calendar, TrendingUp } from "lucide-react";
 import Link from "next/link";
@@ -62,7 +63,7 @@ const CourseCard = ({course}: {course:Course}) => {
 
         <div className="mb-2">
           <span className="inline-flex items-center rounded-full bg-purple-900/30 px-2.5 py-0.5 text-xs font-medium text-purple-300 border border-purple-800/30">
-            {course.category && course.category}
+            {course.category && resetSlug(course.category)}
           </span>
         </div>
 

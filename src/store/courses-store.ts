@@ -3,6 +3,9 @@ import getCourses from "@/apis/courses";
 import getOwnCourses from "@/apis/courses/own-course";
 import getSingleCourse from "@/apis/courses/single-course";
 import getCategories from "@/apis/courses/categories-fetch";
+import getCoursesLists from "@/apis/courses/course-list";
+import getSingleModule from "@/apis/courses/get-single-module";
+import getCoursesMaterials from "@/apis/courses/get-course-materials";
 
 export interface Course {
   _id: string;
@@ -18,19 +21,30 @@ export interface Course {
   __v: number;
 }
 
+interface CourseListType {
+  _id: string;
+  title: string;
+  icon: string;
+  description: string;
+  course: string;
+  institute: string;
+  createdAt: string;
+  updatedAt: string;
+}
 interface GetCoursesResponse {
   success: boolean;
   data?: {
     courses: Course[];
     pagination: any;
     course: Course;
-    categories: {name:string};
+    categories: { title: string };
+    category: CourseListType;
   };
   error?: string;
 }
 
 interface CategoriesType {
-  name: string;
+  title: string;
   _id: string;
   createdAt: string;
   updatedAt: string;
@@ -38,7 +52,9 @@ interface CategoriesType {
 
 interface CourseStore {
   singleCourse: Course | null;
+  singleModule: CourseListType | null;
   category: CategoriesType[];
+  courseList: CourseListType[];
   courses: Course[];
   courses2: Course[];
   ownCourses: Course[];
@@ -52,13 +68,18 @@ interface CourseStore {
   fetchAllCourses: (params: any) => Promise<void>;
   filteredCourse: (params: any) => Promise<void>;
   fetchOwnCourse: (params: any) => Promise<void>;
-  fetchSingleCourse: (id: any) => Promise<void>;
+  fetchSingleCourse: (id: string) => Promise<void>;
   fetchCategories: () => Promise<void>;
+  fetchCourseList: (params: any) => Promise<void>;
+  fetchSingleCourseModule: (params: any) => Promise<void>;
+  fetchCourseMaterials: (id: string) => Promise<void>;
 }
 
 const courseStore = create<CourseStore>((set) => ({
   courses: [],
   courses2: [],
+  courseList: [],
+  singleModule: null,
   category: [],
   ownCourses: [],
   pagination: {},
@@ -69,6 +90,7 @@ const courseStore = create<CourseStore>((set) => ({
   loader: false,
   loader2: false,
   singleCourse: null,
+
   filteredCourse: async (params) => {
     set({ loader: true });
     const res: GetCoursesResponse = await getCourses(params ? params : {});
@@ -179,10 +201,10 @@ const courseStore = create<CourseStore>((set) => ({
       set({ loader: true });
       const res: GetCoursesResponse = await getCategories();
       console.log(res);
-  
+
       if (res.success) {
         set({
-          category: res.data?.category || [],
+          category: res.data?.category,
           loader: false,
           status: true,
           error: null,
@@ -202,8 +224,101 @@ const courseStore = create<CourseStore>((set) => ({
         error: error.message || "Unexpected error while fetching categories",
       });
     }
-  }
-  
+  },
+
+  fetchCourseList: async (params) => {
+    try {
+      set({ loader: true });
+
+      const res = await getCoursesLists(params);
+      console.log(res);
+
+      if (res.success) {
+        set({
+          courseList: res.data?.category,
+          loader: false,
+          status: true,
+          error: null,
+        });
+      } else {
+        set({
+          loader: false,
+          status: false,
+          error: res.error || "Failed to fetch courses list",
+        });
+      }
+    } catch (error: any) {
+      set({
+        status: false,
+        loader: false,
+        error: error.message || "Unexpected error while fetching courses list",
+      });
+    }
+  },
+
+  fetchSingleCourseModule: async (id) => {
+    try {
+      console.log(id);
+
+      set({ loader: true });
+      const res: GetCoursesResponse = await getSingleModule({ id });
+      console.log(res);
+
+      if (res.success) {
+        set({
+          singleModule: res.data?.category,
+          loader: false,
+          status: true,
+          error: null,
+        });
+      } else {
+        set({
+          status: false,
+          loader: false,
+          error: res.error || "Failed to fetch module",
+        });
+      }
+    } catch (error: any) {
+      console.error(error);
+      set({
+        status: false,
+        loader: false,
+        error: error.message || "Unexpected error while fetching module",
+      });
+    }
+  },
+
+  fetchCourseMaterials: async (id) => {
+    try {
+      console.log(id);
+
+      set({ loader: true });
+      const res: GetCoursesResponse = await getCoursesMaterials({ id });
+      console.log(res);
+
+      if (res.success) {
+        set({
+          singleModule: res.data?.category,
+          loader: false,
+          status: true,
+          error: null,
+        });
+      } else {
+        set({
+          status: false,
+          loader: false,
+          error: res.error || "Failed to fetch module",
+        });
+      }
+    } catch (error: any) {
+      console.error(error);
+      set({
+        status: false,
+        loader: false,
+        error: error.message || "Unexpected error while fetching module",
+      });
+    }
+  },
 }));
 
 export default courseStore;

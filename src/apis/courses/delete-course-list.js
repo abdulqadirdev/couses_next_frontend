@@ -2,25 +2,13 @@
 import { cookies } from "next/headers";
 import useFetch from "../../hooks/useFetch";
 
-export default async function updateCourse({ id = "", data }) {
+export default async function deleteCourseList(id) {
   try {
-    console.log("id==>", id,data);
-
-    if (!id) {
-      return {
-        success: false,
-        error: "Course id is not provided",
-      };
-    }
     let token = (await cookies()).get("auth-token")?.value;
 
-    const endpoint = `courses/${id}`;
-    console.log(endpoint);
-
     const response = await useFetch({
-      endpoint,
-      method: "PUT",
-      data,
+      endpoint: "courses/category/" + id,
+      method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -35,13 +23,13 @@ export default async function updateCourse({ id = "", data }) {
     } else {
       return {
         success: false,
-        error: response.error,
+        error: response.error.message,
       };
     }
   } catch (error) {
     return {
       success: false,
-      error: error.message || "Failed to update course!",
+      error: error.message || "Failed to fetch own courses!",
     };
   }
 }
