@@ -9,29 +9,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import getSlug from "@/helper/get-slug";
 
 interface DataProp {
   title: string;
+  _id: string;
 }
 export function SelectInp({
   className,
   data,
   value,
   onChange,
-  defaultValue,
+  placeholder,
+  valueId = false,
   ...props
 }: any) {
-  
   return (
-    <Select value={value} onValueChange={onChange} defaultValue={defaultValue}>
+    <Select value={value} onValueChange={onChange}>
       <SelectTrigger className={`w-full ${className || ""}`} {...props}>
-        <SelectValue placeholder="Select a level" />
+        <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectLabel>Select Level</SelectLabel>
+          <SelectLabel>{placeholder}</SelectLabel>
           {data.map((elem: DataProp, i: number) => (
-            <SelectItem key={i} value={elem.title}>
+            <SelectItem
+              key={i}
+              value={valueId ? elem._id : getSlug(elem.title)}
+            >
               {elem.title}
             </SelectItem>
           ))}

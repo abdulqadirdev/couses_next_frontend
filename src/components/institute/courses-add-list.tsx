@@ -6,16 +6,16 @@ import { Label } from "../ui/label";
 import { SelectInp } from "../element-components/select-inp";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Separator } from "../ui/separator";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { fileStore } from "@/store/file-upload";
-import createCourse from "@/apis/courses/create-course";
+import createCourseList from "@/apis/courses/create-course-list";
 import { useState } from "react";
 import CustomToastMsg from "../toast-message";
 import courseStore from "@/store/courses-store";
+import userStore from "@/store/user-store";
 
-const CourseForm = () => {
+const CourseMooduleForm = () => {
   const {
     register,
     handleSubmit,
@@ -34,26 +34,28 @@ const CourseForm = () => {
     error: false,
     message: "",
   });
-  const { fetchCategories, category } = courseStore();
-  console.log(category);
+  const { user } = userStore();
+  const ownerId = user?.owner;
 
-  const levelData = [
-    { title: "Beginner" },
-    { title: "Intermediate" },
-    { title: "Advanced" },
-  ];
+  const { fetchOwnCourse, ownCourses } = courseStore();
+  console.log(ownCourses);
+
+ 
   const router = useRouter();
 
   const onSubmit = async (data: any) => {
     try {
       let formData = new FormData();
-      formData.append("file", data.image[0]);
+      formData.append("file", data.icon[0]);
 
       await fileUploader(formData);
       const uploadedUrl = fileStore.getState().fileUrl;
-      data.image = uploadedUrl;
+      data.icon = uploadedUrl;
+      console.log(data);
 
-      let created = await createCourse(data);
+      let created = await createCourseList({ ...data, institute: ownerId });
+      console.log(created);
+      
       if (created.error) {
         setMessage({ error: true, message: created.error });
       } else {
@@ -87,7 +89,7 @@ const CourseForm = () => {
           <CardHeader className="bg-gradient-to-r from-purple-600 to-indigo-600 py-6">
             <CardTitle className="text-2xl font-bold text-white flex items-center gap-2">
               <BookOpen className="h-6 w-6" />
-              Create New Course
+              Create Course Module
             </CardTitle>
           </CardHeader>
 
@@ -118,20 +120,26 @@ const CourseForm = () => {
                   htmlFor="level"
                   className="text-sm font-medium text-gray-700"
                 >
-                  Difficulty Level
+                  Select Course
                 </Label>
                 <Controller
-                  name="level"
+                  name="course"
                   control={control}
                   rules={{ required: true }}
                   render={({ field }) => (
                     <SelectInp
-                      id="level"
+                      id="course"
                       className="w-full border-gray-300 focus:border-purple-500 focus:ring-purple-500"
-                      data={levelData}
-                      placeholder="Select Level"
+                      data={ownCourses}
+                      placeholder="Select Course"
                       value={field.value}
+                      valueId={true}
                       onChange={field.onChange}
+                      onMouseOver={() => {
+                        if (ownCourses.length < 1) {
+                          fetchOwnCourse({ id: ownerId });
+                        }
+                      }}
                     />
                   )}
                 />
@@ -167,14 +175,14 @@ const CourseForm = () => {
 
             <div>
               <Label
-                htmlFor="image"
+                htmlFor="icon"
                 className="block text-sm font-medium text-gray-700 mb-3"
               >
-                Course Thumbnail
+                Course Module Thumbnail
               </Label>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-purple-500 transition-colors">
                 <label
-                  htmlFor="image"
+                  htmlFor="icon"
                   className="flex flex-col items-center justify-center cursor-pointer"
                 >
                   <div className="h-16 w-16 rounded-full bg-purple-100 flex items-center justify-center mb-4">
@@ -188,18 +196,18 @@ const CourseForm = () => {
                   </span>
                   <Input
                     type="file"
-                    id="image"
+                    id="icon"
                     accept="image/png, image/jpeg, image/webp"
                     className="hidden"
-                    {...register("image", { required: true })}
+                    {...register("icon", { required: true })}
                     onChange={(e) => {
                       handleImageChange(e);
-                      register("image").onChange(e);
+                      register("icon").onChange(e);
                     }}
                   />
                 </label>
               </div>
-              {errors.image && (
+              {errors.icon && (
                 <span className="text-sm text-red-500">
                   This field is required
                 </span>
@@ -217,93 +225,10 @@ const CourseForm = () => {
               </div>
             )}
 
-            <Separator className="my-6" />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-gray-500" />
-                  Featured
-                </Label>
-                <div className="flex items-center space-x-4 mt-1">
-                  <div className="flex items-center">
-                    <Input
-                      type="radio"
-                      id="featured-yes"
-                      value="true"
-                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300"
-                      {...register("featured", { required: true })}
-                    />
-                    <Label
-                      htmlFor="featured-yes"
-                      className="ml-2 text-sm text-gray-700"
-                    >
-                      Yes
-                    </Label>
-                  </div>
-                  <div className="flex items-center">
-                    <Input
-                      type="radio"
-                      id="featured-no"
-                      value="false"
-                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300"
-                      {...register("featured", { required: true })}
-                    />
-                    <Label
-                      htmlFor="featured-no"
-                      className="ml-2 text-sm text-gray-700"
-                    >
-                      No
-                    </Label>
-                  </div>
-                </div>
-                {errors.featured && (
-                  <span className="text-sm text-red-500">
-                    This field is required
-                  </span>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label
-                  htmlFor="category"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Category
-                </Label>
-                <Controller
-                  name="category"
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field }) => (
-                    <div
-                      onMouseOver={() => {
-                        if (category.length < 1) fetchCategories();
-                      }}
-                    >
-                      <SelectInp
-                        id="category"
-                        value={field.value}
-                        onChange={field.onChange}
-                        placeholder="Select Category"
-                        className="w-full border-gray-300 focus:border-purple-500 focus:ring-purple-500"
-                        data={category}
-                      />
-                    </div>
-                  )}
-                />
-                {errors.category && (
-                  <span className="text-sm text-red-500">
-                    This field is required
-                  </span>
-                )}
-              </div>
-            </div>
-
             <div className="mt-10 flex items-center justify-end gap-4">
               <Button
                 type="button"
-                onClick={() => router.push("manage-course")}
+                onClick={() => router.push("course-list")}
                 variant="outline"
                 className="px-6 py-2 border-gray-300 text-gray-700 hover:bg-gray-50"
               >
@@ -314,7 +239,7 @@ const CourseForm = () => {
                 disabled={loader}
                 className="px-6 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium rounded-md transition-all"
               >
-                {loader ? "Creating Course..." : "Create Course"}
+                {loader ? "Creating Module..." : "Create Module"}
               </Button>
             </div>
           </CardContent>
@@ -324,4 +249,4 @@ const CourseForm = () => {
   );
 };
 
-export default CourseForm;
+export default CourseMooduleForm;

@@ -3,20 +3,18 @@ import { Upload, BookOpen, Clock } from "lucide-react";
 import TextArea from "../element-components/text-area";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { SelectInp } from "../element-components/select-inp";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Separator } from "../ui/separator";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { fileStore } from "@/store/file-upload";
-import updateCourse from "@/apis/courses/update-course";
 import { useEffect, useState } from "react";
 import CustomToastMsg from "../toast-message";
 import courseStore from "@/store/courses-store";
+import updateCourseModule from "@/apis/courses/update-course-list";
 
-const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
-  const { fetchSingleCourse, singleCourse, fetchCategories, category } =
+const CourseModuleForm = ({ courseId }: { courseId: string }) => {
+  const { fetchSingleCourseModule, singleModule, fetchCategories, category } =
     courseStore();
 
   const { fileUploader, fileUrl } = fileStore();
@@ -34,32 +32,26 @@ const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
   } = useForm({
     defaultValues: {
       title: "",
-      level: "",
-      image: "",
+      icon: "",
       description: "",
-      category: "",
-      featured: "false",
     },
   });
 
   useEffect(() => {
-    fetchSingleCourse(courseId);
+    fetchSingleCourseModule(courseId);
   }, [courseId]);
 
   useEffect(() => {
-    if (singleCourse) {
+    if (singleModule) {
       reset({
-        title: singleCourse.title,
-        level: singleCourse.level,
-        image: singleCourse.image ?? undefined,
-        description: singleCourse.description,
-        category: singleCourse.category,
-        featured: singleCourse.featured ? "true" : "false",
+        title: singleModule.title,
+        icon: singleModule.icon ?? undefined,
+        description: singleModule.description,
       });
 
-      setPreview(singleCourse.image);
+      setPreview(singleModule.icon);
     }
-  }, [singleCourse, reset]);
+  }, [singleModule, reset]);
   interface Message {
     error: boolean;
     message: string;
@@ -70,25 +62,19 @@ const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
     message: "",
   });
 
-  const levelData = [
-    { title: "Beginner" },
-    { title: "Intermediate" },
-    { title: "Advanced" },
-  ];
-
   const onSubmit = async (data: any) => {
     setLoader(true);
     try {
-      if (data.image instanceof FileList) {
+      if (data.icon instanceof FileList) {
         const formData = new FormData();
-        formData.append("file", data.image[0]);
+        formData.append("file", data.icon[0]);
         await fileUploader(formData);
-        data.image = fileStore.getState().fileUrl || preview;
+        data.icon = fileStore.getState().fileUrl || preview;
       } else {
-        data.image = preview;
+        data.icon = preview;
       }
 
-      const updated = await updateCourse({ id: courseId, data });
+      const updated = await updateCourseModule({ id: courseId, data });
 
       if (updated.error) {
         setMessage({ error: true, message: updated.error });
@@ -130,7 +116,7 @@ const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
           <CardHeader className="bg-gradient-to-r from-purple-600 to-indigo-600 py-6">
             <CardTitle className="text-2xl font-bold text-white flex items-center gap-2">
               <BookOpen className="h-6 w-6" />
-              Update Course
+              Update Course Module
             </CardTitle>
           </CardHeader>
 
@@ -149,29 +135,6 @@ const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
                   </span>
                 )}
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="level">Difficulty Level</Label>
-                <Controller
-                  name="level"
-                  control={control}
-                  rules={{ required: "Level is required" }}
-                  render={({ field }) => (
-                    <SelectInp
-                      id="level"
-                      data={levelData}
-                      value={field.value}
-                      placeholder="Select Level"
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                {errors.level && (
-                  <span className="text-sm text-red-500">
-                    {errors.level.message}
-                  </span>
-                )}
-              </div>
             </div>
 
             <div className="space-y-2">
@@ -182,7 +145,7 @@ const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
                focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
                 rows={5}
                 {...register("description", {
-                  required: "Description is required",
+                  required: "description is required",
                 })}
               />
               {errors.description && (
@@ -193,10 +156,10 @@ const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
             </div>
 
             <div>
-              <Label htmlFor="image">Course Thumbnail</Label>
+              <Label htmlFor="icon">Course Thumbnail</Label>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-purple-500">
                 <label
-                  htmlFor="image"
+                  htmlFor="icon"
                   className="flex flex-col items-center justify-center cursor-pointer"
                 >
                   <div className="h-16 w-16 rounded-full bg-purple-100 flex items-center justify-center mb-4">
@@ -210,20 +173,20 @@ const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
                   </span>
                   <Input
                     type="file"
-                    id="image"
+                    id="icon"
                     accept="image/png, image/jpeg, image/webp"
                     className="hidden"
-                    {...register("image")}
+                    {...register("icon")}
                     onChange={(e) => {
                       handleImageChange(e);
-                      register("image").onChange(e);
+                      register("icon").onChange(e);
                     }}
                   />
                 </label>
               </div>
-              {errors.image && (
+              {errors.icon && (
                 <span className="text-sm text-red-500">
-                  {errors.image.message}
+                  {errors.icon.message}
                 </span>
               )}
             </div>
@@ -239,74 +202,11 @@ const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
               </div>
             )}
 
-            <Separator className="my-6" />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label>Featured</Label>
-                <div className="flex items-center space-x-4 mt-1">
-                  <div className="flex items-center">
-                    <Input
-                      type="radio"
-                      id="featured-yes"
-                      value="true"
-                      {...register("featured", { required: "Required" })}
-                    />
-                    <Label htmlFor="featured-yes" className="ml-2">
-                      Yes
-                    </Label>
-                  </div>
-                  <div className="flex items-center">
-                    <Input
-                      type="radio"
-                      id="featured-no"
-                      value="false"
-                      {...register("featured", { required: "Required" })}
-                    />
-                    <Label htmlFor="featured-no" className="ml-2">
-                      No
-                    </Label>
-                  </div>
-                </div>
-                {errors.featured && (
-                  <span className="text-sm text-red-500">
-                    {errors.featured.message}
-                  </span>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <Controller
-                  name="category"
-                  control={control}
-                  rules={{ required: "Category is required" }}
-                  render={({ field }) => (
-                    <SelectInp
-                      id="category"
-                      value={field.value}
-                      onChange={field.onChange}
-                      placeholder="Select Category"
-                      onMouseOver={() => {
-                        if (category.length < 1) fetchCategories();
-                      }}
-                      data={category || []}
-                    />
-                  )}
-                />
-                {errors.category && (
-                  <span className="text-sm text-red-500">
-                    {errors.category.message}
-                  </span>
-                )}
-              </div>
-            </div>
-
             <div className="mt-10 flex items-center justify-end gap-4">
               <Button
                 type="button"
                 onClick={() =>
-                  router.push("/institute-dashboard/courses/manage-course")
+                  router.push("/institute-dashboard/courses/course-list")
                 }
                 variant="outline"
               >
@@ -327,4 +227,4 @@ const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
   );
 };
 
-export default CourseFormUpdate;
+export default CourseModuleForm;

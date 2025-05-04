@@ -16,10 +16,11 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import userStore from "@/store/user-store";
-
+import nextLogo from "@/assets/images/next.svg";
 import { useEffect } from "react";
+import Image from "next/image";
 
 const items = [
   {
@@ -32,8 +33,16 @@ const items = [
     url: "/institute-dashboard/courses/manage-course",
     icon: BookCopyIcon,
   },
-  { title: "Categories", url: "#", icon: Boxes },
-  { title: "Course Materials", url: "#", icon: Files },
+  {
+    title: "Course Lists",
+    url: "/institute-dashboard/courses/course-list",
+    icon: Boxes,
+  },
+  {
+    title: "Course Materials",
+    url: "/institute-dashboard/courses/course-material",
+    icon: Files,
+  },
   { title: "Student Applications", url: "#", icon: FileBarChart },
   { title: "Logout", url: "#", icon: LogOut },
 ];
@@ -41,6 +50,7 @@ const items = [
 export function AppSidebar() {
   const path = usePathname();
   const { logOutFunc, fetchUser } = userStore();
+  const router = useRouter();
   useEffect(() => {
     fetchUser();
   }, []);
@@ -50,10 +60,10 @@ export function AppSidebar() {
       <div className="bg-gradient-to-r from-purple-800 to-indigo-800 shadow-xl h-screen">
         <SidebarContent className="flex flex-col h-full text-white">
           <div className="p-6 border-b border-white/10 flex items-center gap-4">
-            <img
-              src="https://res.cloudinary.com/dhvtjvx8y/image/upload/v1744659944/Logo-05%20%281%29.png"
+            <Image
+              src={nextLogo}
               alt="Institute Logo"
-              className="h-10 object-contain"
+              className="h-15 w-15 object-contain"
             />
             <h2 className="text-xl font-semibold tracking-wide">
               My Institute
@@ -70,7 +80,10 @@ export function AppSidebar() {
                     <SidebarMenuItem key={item.title}>
                       {item.title === "Logout" ? (
                         <button
-                          onClick={() => logOutFunc()}
+                          onClick={() => {
+                            logOutFunc();
+                            router.push("/");
+                          }}
                           className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 w-full ${
                             isActive
                               ? "bg-white/10 text-white font-medium"
@@ -85,7 +98,7 @@ export function AppSidebar() {
                           href={item.url}
                           className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                             isActive
-                              ? "bg-white/10 text-white font-medium"
+                              ? "bg-white text-black font-medium"
                               : "text-white/80 hover:bg-white/10 hover:text-white"
                           }`}
                         >
