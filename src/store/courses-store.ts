@@ -31,6 +31,16 @@ interface CourseListType {
   createdAt: string;
   updatedAt: string;
 }
+interface CourseMaterial {
+  _id: string;
+  title: string;
+  url: string;
+  description: string;
+  category: string;
+  institute: string;
+  createdAt: string;
+  updatedAt: string;
+}
 interface GetCoursesResponse {
   success: boolean;
   data?: {
@@ -39,6 +49,7 @@ interface GetCoursesResponse {
     course: Course;
     categories: { title: string };
     category: CourseListType;
+    courses_items: CourseMaterial;
   };
   error?: string;
 }
@@ -55,6 +66,7 @@ interface CourseStore {
   singleModule: CourseListType | null;
   category: CategoriesType[];
   courseList: CourseListType[];
+  courseMaterial: CourseMaterial[] | null;
   courses: Course[];
   courses2: Course[];
   ownCourses: Course[];
@@ -68,11 +80,11 @@ interface CourseStore {
   fetchAllCourses: (params: any) => Promise<void>;
   filteredCourse: (params: any) => Promise<void>;
   fetchOwnCourse: (params: any) => Promise<void>;
-  fetchSingleCourse: (id: string) => Promise<void>;
+  fetchSingleCourse: (params: any) => Promise<void>;
   fetchCategories: () => Promise<void>;
   fetchCourseList: (params: any) => Promise<void>;
   fetchSingleCourseModule: (params: any) => Promise<void>;
-  fetchCourseMaterials: (id: string) => Promise<void>;
+  fetchCourseMaterials: (params: any) => Promise<void>;
 }
 
 const courseStore = create<CourseStore>((set) => ({
@@ -80,6 +92,7 @@ const courseStore = create<CourseStore>((set) => ({
   courses2: [],
   courseList: [],
   singleModule: null,
+  courseMaterial: [],
   category: [],
   ownCourses: [],
   pagination: {},
@@ -164,12 +177,12 @@ const courseStore = create<CourseStore>((set) => ({
     }
   },
 
-  fetchSingleCourse: async (id) => {
+  fetchSingleCourse: async (params) => {
     try {
-      console.log(id);
+      console.log(params);
 
       set({ loader: true });
-      const res: GetCoursesResponse = await getSingleCourse({ id });
+      const res: GetCoursesResponse = await getSingleCourse(params);
       console.log(res);
 
       if (res.success) {
@@ -236,6 +249,7 @@ const courseStore = create<CourseStore>((set) => ({
       if (res.success) {
         set({
           courseList: res.data?.category,
+          pagination: res.data?.pagination,
           loader: false,
           status: true,
           error: null,
@@ -288,17 +302,18 @@ const courseStore = create<CourseStore>((set) => ({
     }
   },
 
-  fetchCourseMaterials: async (id) => {
+  fetchCourseMaterials: async (params) => {
     try {
-      console.log(id);
+      console.log(params);
 
       set({ loader: true });
-      const res: GetCoursesResponse = await getCoursesMaterials({ id });
+      const res: GetCoursesResponse = await getCoursesMaterials(params);
       console.log(res);
 
       if (res.success) {
         set({
-          singleModule: res.data?.category,
+          courseMaterial: res.data?.courses_items,
+          pagination: res.data?.pagination,
           loader: false,
           status: true,
           error: null,
