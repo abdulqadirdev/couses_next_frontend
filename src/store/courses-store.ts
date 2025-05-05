@@ -31,6 +31,7 @@ interface CourseListType {
   createdAt: string;
   updatedAt: string;
 }
+
 interface CourseMaterial {
   _id: string;
   title: string;
@@ -41,6 +42,7 @@ interface CourseMaterial {
   createdAt: string;
   updatedAt: string;
 }
+
 interface GetCoursesResponse {
   success: boolean;
   data?: {
@@ -80,6 +82,7 @@ interface CourseStore {
   fetchAllCourses: (params: any) => Promise<void>;
   filteredCourse: (params: any) => Promise<void>;
   fetchOwnCourse: (params: any) => Promise<void>;
+
   fetchSingleCourse: (params: any) => Promise<void>;
   fetchCategories: () => Promise<void>;
   fetchCourseList: (params: any) => Promise<void>;
@@ -301,6 +304,7 @@ const courseStore = create<CourseStore>((set) => ({
       });
     }
   },
+
 
   fetchCourseMaterials: async (params) => {
     try {

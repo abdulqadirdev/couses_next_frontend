@@ -93,6 +93,7 @@ const TableShow = ({
     }
   }, [queries, message.message, module]);
 
+
   useEffect(() => {
     if (queries.limit > pagination?.total) {
       setQueries((prev) => ({
@@ -210,8 +211,10 @@ const TableShow = ({
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
+
               {data[0].length > 0 ? (
                 data[0].map((elem: any, i: any) => (
+
                   <tr key={elem._id} className="hover:bg-gray-50">
                     <td className="p-3 whitespace-nowrap text-sm text-gray-500">
                       {(queries.page - 1) * queries.limit + i + 1}
@@ -229,7 +232,6 @@ const TableShow = ({
                         <span>{elem.title}</span>
                       </div>
                     </td>
-
                     <td className="p-3 whitespace-nowrap text-sm text-gray-500">
                       {formatDate(elem.createdAt)}
                     </td>
