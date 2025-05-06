@@ -83,7 +83,7 @@ interface CourseStore {
   filteredCourse: (params: any) => Promise<void>;
   fetchOwnCourse: (params: any) => Promise<void>;
 
-  fetchSingleCourse: (params: any) => Promise<void>;
+  fetchSingleCourse: (id: string) => Promise<void>;
   fetchCategories: () => Promise<void>;
   fetchCourseList: (params: any) => Promise<void>;
   fetchSingleCourseModule: (params: any) => Promise<void>;
@@ -180,12 +180,12 @@ const courseStore = create<CourseStore>((set) => ({
     }
   },
 
-  fetchSingleCourse: async (params) => {
+  fetchSingleCourse: async (id) => {
     try {
-      console.log(params);
+      console.log(id);
 
       set({ loader: true });
-      const res: GetCoursesResponse = await getSingleCourse(params);
+      const res: GetCoursesResponse = await getSingleCourse({id});
       console.log(res);
 
       if (res.success) {

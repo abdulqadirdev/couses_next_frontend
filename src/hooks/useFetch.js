@@ -8,7 +8,7 @@ export default async function useFetch(ReqConfig) {
     method = "GET",
     headers = {},
     data = {},
-    contentType,
+    uploader
   } = ReqConfig;
 
   const url = process.env.API_URL + endpoint;
@@ -19,7 +19,6 @@ export default async function useFetch(ReqConfig) {
       method,
       url,
       headers: {
-        // "Content-Type": "application/json",
         ...headers,
       },
       data: method !== "GET" ? data : undefined,

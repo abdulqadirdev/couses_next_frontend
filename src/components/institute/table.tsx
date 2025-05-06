@@ -221,14 +221,13 @@ const TableShow = ({
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900 flex gap-2 items-center">
-                        {elem.image ||
-                          (elem.icon && (
+                        {(elem.image ||elem.icon) && (
                             <img
                               src={elem.image || elem.icon}
                               className="w-12 h-12 p-2 object-contain rounded-xl bg-gray-200"
                               alt={elem.title}
                             />
-                          ))}
+                          )}
                         <span>{elem.title}</span>
                       </div>
                     </td>

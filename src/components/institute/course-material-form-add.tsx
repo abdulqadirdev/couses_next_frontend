@@ -61,6 +61,7 @@ const CourseMaterialForm = () => {
       } else {
         type = "unknown";
       }
+      console.log("file=>>>>",type, data.url[0]);
 
       await fileUploader(formData);
       const uploadedUrl = fileStore.getState().fileUrl;
@@ -220,7 +221,7 @@ const CourseMaterialForm = () => {
                   />
                 </label>
               </div>
-              {errors.icon && (
+              {errors.url && (
                 <span className="text-sm text-red-500">
                   This field is required
                 </span>
@@ -241,7 +242,7 @@ const CourseMaterialForm = () => {
             <div className="mt-10 flex items-center justify-end gap-4">
               <Button
                 type="button"
-                onClick={() => router.push("course-list")}
+                onClick={() => router.push("course-material")}
                 variant="outline"
                 className="px-6 py-2 border-gray-300 text-gray-700 hover:bg-gray-50"
               >

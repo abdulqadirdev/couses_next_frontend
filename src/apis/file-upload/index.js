@@ -2,7 +2,7 @@
 import { cookies } from "next/headers";
 import useFetch from "../../hooks/useFetch";
 
-export default async function uploadFile(file) {
+export default async function uploadFile(file, uploader = null) {
   try {
     let token = (await cookies()).get("auth-token")?.value;
     console.log("fileGot=>>>", file);
@@ -14,6 +14,7 @@ export default async function uploadFile(file) {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      uploader,
     });
     console.log("hello", response);
 
