@@ -17,6 +17,22 @@ import setMessageState from "@/helper/message-set";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
+interface Props {
+  data: any;
+  pagination: any;
+  loader: boolean;
+  status: boolean | null;
+  fetchData: (params: any) => Promise<void>;
+  ownerId: string | undefined;
+  initialParams?: string;
+  deleteFunc?: any;
+  updatePageUrl?: string;
+  btnText?: string;
+  loaderMessage?: string;
+  module?: string;
+  tableHead?: { title: string }[] | [];
+}
+
 const TableShow = ({
   data,
   pagination,
@@ -31,7 +47,8 @@ const TableShow = ({
   loaderMessage = "Deleting Module...",
   tableHead = [],
   module = "",
-}: any) => {
+}: Props) => {
+
   const [isDeleted, setDeleted] = useState<boolean>(false);
   const [open, setOpen] = useState<{ [key: string]: boolean }>({
     deleted: false,
@@ -69,6 +86,7 @@ const TableShow = ({
     try {
       setDeleted(true);
       const res = await deleteFunc(selectedCourse._id);
+      console.log(res);
       setDeleted(false);
       setMessageState(res, setMessage);
       toggleModal("deleted");
@@ -92,6 +110,7 @@ const TableShow = ({
       fetchData(obj);
     }
   }, [queries, message.message, module]);
+
 
 
   useEffect(() => {
@@ -211,24 +230,21 @@ const TableShow = ({
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-
-              {data[0].length > 0 ? (
-                data[0].map((elem: any, i: any) => (
-
-                  <tr key={elem._id} className="hover:bg-gray-50">
+              {data.length > 0 ? (
+                data.map((elem: any, i: any) => (
+                  <tr key={i} className="hover:bg-gray-50">
                     <td className="p-3 whitespace-nowrap text-sm text-gray-500">
                       {(queries.page - 1) * queries.limit + i + 1}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900 flex gap-2 items-center">
-                        {elem.image ||
-                          (elem.icon && (
-                            <img
-                              src={elem.image || elem.icon}
-                              className="w-12 h-12 p-2 object-contain rounded-xl bg-gray-200"
-                              alt={elem.title}
-                            />
-                          ))}
+                        {(elem.image || elem.icon) && (
+                          <img
+                            src={elem.image || elem.icon}
+                            className="w-12 h-12 p-2 object-contain rounded-xl bg-gray-200"
+                            alt={elem.title}
+                          />
+                        )}
                         <span>{elem.title}</span>
                       </div>
                     </td>

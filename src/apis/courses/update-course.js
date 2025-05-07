@@ -35,7 +35,7 @@ export default async function updateCourse({ id = "", data }) {
     } else {
       return {
         success: false,
-        error: response.error,
+        error: response.error.message,
       };
     }
   } catch (error) {

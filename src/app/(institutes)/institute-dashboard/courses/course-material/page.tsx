@@ -4,7 +4,7 @@ import courseStore from "@/store/courses-store";
 import userStore from "@/store/user-store";
 import Link from "next/link";
 import TableShow from "@/components/institute/table";
-import deleteCourseList from "@/apis/courses/delete-course-list";
+import deleteCourseMaterial from "@/apis/courses/delete-course-material";
 import { useState } from "react";
 
 const CourseMaterial = () => {
@@ -65,17 +65,18 @@ const CourseMaterial = () => {
         </div>
       </div>
       <TableShow
-        data={[courseMaterial]}
+        data={courseMaterial}
+
         fetchData={fetchCourseMaterials}
         pagination={pagination}
         status={status}
         loader={loader}
         ownerId={ownerId}
         initialParams="course-material"
-        deleteFunc={deleteCourseList}
+        deleteFunc={deleteCourseMaterial}
         btnText="Delete Module"
         loaderMessage="Deleting Module..."
-        updatePageUrl="update-course-list"
+        updatePageUrl="update-course-material"
         tableHead={tableHead}
         module={module}
       />

@@ -39,7 +39,6 @@ const Courses = () => {
         loader={loader}
         ownerId={ownerId}
         initialParams="manage-course"
-        itemName={"Course Name"}
         deleteFunc={deleteCourse}
         tableHead={tableHead}
       />
