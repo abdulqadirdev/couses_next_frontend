@@ -32,14 +32,13 @@ const Courses = () => {
         </Link>
       </div>
       <TableShow
-        data={[ownCourses]}
+        data={ownCourses}
         fetchData={fetchOwnCourse}
         pagination={pagination}
         status={status}
         loader={loader}
         ownerId={ownerId}
         initialParams="manage-course"
-        itemName={"Course Name"}
         deleteFunc={deleteCourse}
         tableHead={tableHead}
       />

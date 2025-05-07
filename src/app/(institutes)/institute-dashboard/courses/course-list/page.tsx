@@ -13,7 +13,7 @@ const CourseList = () => {
   const { courseList, pagination, loader, fetchCourseList, status } =
     courseStore();
 
-  console.log(courseList);
+  console.log("courseList==>",courseList);
   const tableHead = [
     { title: "Sno" },
     { title: "Course Module" },
@@ -34,7 +34,7 @@ const CourseList = () => {
         </Link>
       </div>
       <TableShow
-        data={[courseList]}
+        data={courseList}
         fetchData={fetchCourseList}
         pagination={pagination}
         status={status}
