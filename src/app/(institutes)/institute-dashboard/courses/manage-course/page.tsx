@@ -2,8 +2,9 @@
 import courseStore from "@/store/courses-store";
 import userStore from "@/store/user-store";
 import Link from "next/link";
-import TableShow from "@/components/institute/table";
+import TableShow from "@/components/institute/tables/table";
 import deleteCourse from "@/apis/courses/delete-course";
+import CourseRow from "@/components/institute/tables/courses-row";
 
 const Courses = () => {
   const { user } = userStore();
@@ -39,9 +40,9 @@ const Courses = () => {
         loader={loader}
         ownerId={ownerId}
         initialParams="manage-course"
-        itemName={"Course Name"}
         deleteFunc={deleteCourse}
         tableHead={tableHead}
+        TableRow={CourseRow}
       />
     </>
   );

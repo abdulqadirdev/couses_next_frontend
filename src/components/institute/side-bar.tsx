@@ -43,11 +43,7 @@ const items = [
     url: "/institute-dashboard/courses/course-material",
     icon: Files,
   },
-  {
-    title: "Student Applications",
-    url: "/institute-dashboard/student-application",
-    icon: FileBarChart,
-  },
+  { title: "Student Applications", url: "/institute-dashboard/applications/student-applications", icon: FileBarChart },
   { title: "Logout", url: "#", icon: LogOut },
 ];
 

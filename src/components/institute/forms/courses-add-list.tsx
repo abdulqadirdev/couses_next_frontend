@@ -1,17 +1,17 @@
 "use client";
 import { Upload, BookOpen, Clock } from "lucide-react";
-import TextArea from "../element-components/text-area";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { SelectInp } from "../element-components/select-inp";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import TextArea from "../../element-components/text-area";
+import { Input } from "../../ui/input";
+import { Label } from "../../ui/label";
+import { SelectInp } from "../../element-components/select-inp";
+import { Button } from "../../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { fileStore } from "@/store/file-upload";
 import createCourseList from "@/apis/courses/create-course-list";
 import { useState } from "react";
-import CustomToastMsg from "../toast-message";
+import CustomToastMsg from "../../toast-message";
 import courseStore from "@/store/courses-store";
 import userStore from "@/store/user-store";
 
@@ -29,7 +29,7 @@ const CourseMooduleForm = () => {
     message: string;
   }
   const [preview, setPreview] = useState<string | null>(null);
-  const { fileUploader, loader } = fileStore();
+  const { fileUploader, fileloader } = fileStore();
   const [message, setMessage] = useState<Message>({
     error: false,
     message: "",
@@ -236,10 +236,10 @@ const CourseMooduleForm = () => {
               </Button>
               <Button
                 type="submit"
-                disabled={loader}
+                disabled={fileloader}
                 className="px-6 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium rounded-md transition-all"
               >
-                {loader ? "Creating Module..." : "Create Module"}
+                {fileloader ? "Creating Module..." : "Create Module"}
               </Button>
             </div>
           </CardContent>

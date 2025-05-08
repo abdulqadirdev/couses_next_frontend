@@ -1,70 +1,107 @@
 "use client";
 import { Upload, BookOpen, Clock } from "lucide-react";
-import TextArea from "../element-components/text-area";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { SelectInp } from "../element-components/select-inp";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Separator } from "../ui/separator";
+import TextArea from "../../element-components/text-area";
+import { Input } from "../../ui/input";
+import { Label } from "../../ui/label";
+import { SelectInp } from "../../element-components/select-inp";
+import { Button } from "../../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
+import { Separator } from "../../ui/separator";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { fileStore } from "@/store/file-upload";
-import createCourse from "@/apis/courses/create-course";
-import { useState } from "react";
-import CustomToastMsg from "../toast-message";
+import updateCourse from "@/apis/courses/update-course";
+import { useEffect, useState } from "react";
+import CustomToastMsg from "../../toast-message";
 import courseStore from "@/store/courses-store";
 
-const CourseForm = () => {
+const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
+  const { fetchSingleCourse, singleCourse, fetchCategories, category } =
+    courseStore();
+
+  const { fileUploader, fileUrl } = fileStore();
+  const router = useRouter();
+
+  const [preview, setPreview] = useState<string | null | undefined>(null);
+  const [loader, setLoader] = useState<boolean>(false);
+
   const {
     register,
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
     reset,
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      title: "",
+      level: "",
+      image: "",
+      description: "",
+      category: "",
+      featured: "false",
+    },
+  });
 
+  useEffect(() => {
+    fetchSingleCourse(courseId);
+  }, [courseId]);
+
+  useEffect(() => {
+    if (singleCourse) {
+      reset({
+        title: singleCourse.title,
+        level: singleCourse.level,
+        image: singleCourse.image ?? undefined,
+        description: singleCourse.description,
+        category: singleCourse.category,
+        featured: singleCourse.featured ? "true" : "false",
+      });
+
+      setPreview(singleCourse.image);
+    }
+  }, [singleCourse, reset]);
   interface Message {
     error: boolean;
     message: string;
   }
-  const [preview, setPreview] = useState<string | null>(null);
-  const { fileUploader, loader } = fileStore();
+
   const [message, setMessage] = useState<Message>({
     error: false,
     message: "",
   });
-  const { fetchCategories, category } = courseStore();
-  console.log(category);
 
   const levelData = [
     { title: "Beginner" },
     { title: "Intermediate" },
     { title: "Advanced" },
   ];
-  const router = useRouter();
 
   const onSubmit = async (data: any) => {
+    setLoader(true);
     try {
-      let formData = new FormData();
-      formData.append("file", data.image[0]);
-
-      await fileUploader(formData);
-      const uploadedUrl = fileStore.getState().fileUrl;
-      data.image = uploadedUrl;
-
-      let created = await createCourse(data);
-      if (created.error) {
-        setMessage({ error: true, message: created.error });
+      if (data.image instanceof FileList) {
+        const formData = new FormData();
+        formData.append("file", data.image[0]);
+        await fileUploader(formData);
+        data.image = fileStore.getState().fileUrl || preview;
       } else {
-        setMessage({ error: false, message: created.message });
-        reset();
-        setPreview("");
+        data.image = preview;
       }
-      console.log("Form data submitted:", data);
+
+      const updated = await updateCourse({ id: courseId, data });
+
+      if (updated.error) {
+        setMessage({ error: true, message: updated.error });
+      } else {
+        setMessage({ error: false, message: updated.message });
+        reset(data);
+      }
+      setLoader(false);
     } catch (error) {
       console.error(error);
       setMessage({ error: true, message: "Something went wrong!" });
+    } finally {
+      setLoader(false);
     }
   };
 
@@ -82,97 +119,82 @@ const CourseForm = () => {
           {message.message}
         </CustomToastMsg>
       )}
+
+      {loader && (
+        <div className="fixed top-0 left-0 z-20 h-screen w-full bg-white/10 flex justify-center items-center">
+          <span className="loader-2"></span>
+        </div>
+      )}
       <form onSubmit={handleSubmit(onSubmit)}>
         <Card className="max-w-5xl mx-auto mt-10 border-0 shadow-xl overflow-hidden">
           <CardHeader className="bg-gradient-to-r from-purple-600 to-indigo-600 py-6">
             <CardTitle className="text-2xl font-bold text-white flex items-center gap-2">
               <BookOpen className="h-6 w-6" />
-              Create New Course
+              Update Course
             </CardTitle>
           </CardHeader>
 
           <CardContent className="p-8 space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label
-                  htmlFor="title"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Course Title
-                </Label>
+                <Label htmlFor="title">Course Title</Label>
                 <Input
                   id="title"
                   placeholder="e.g. Advanced React Development"
-                  className="w-full transition-all border-gray-300 focus:border-purple-500 focus:ring-purple-500"
-                  {...register("title", { required: true })}
+                  {...register("title", { required: "Title is required" })}
                 />
                 {errors.title && (
                   <span className="text-sm text-red-500">
-                    This field is required
+                    {errors.title.message}
                   </span>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label
-                  htmlFor="level"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Difficulty Level
-                </Label>
+                <Label htmlFor="level">Difficulty Level</Label>
                 <Controller
                   name="level"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: "Level is required" }}
                   render={({ field }) => (
                     <SelectInp
                       id="level"
-                      className="w-full border-gray-300 focus:border-purple-500 focus:ring-purple-500"
                       data={levelData}
-                      placeholder="Select Level"
                       value={field.value}
+                      placeholder="Select Level"
                       onChange={field.onChange}
                     />
                   )}
                 />
                 {errors.level && (
                   <span className="text-sm text-red-500">
-                    This field is required
+                    {errors.level.message}
                   </span>
                 )}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label
-                htmlFor="description"
-                className="text-sm font-medium text-gray-700"
-              >
-                Course Description
-              </Label>
+              <Label htmlFor="description">Course Description</Label>
               <TextArea
                 id="description"
-                placeholder="Provide a detailed description of what students will learn in this course..."
-                rows={5}
                 className="w-full border rounded-md border-gray-300 text-sm shadow-sm py-2 px-4 transition-all focus:outline-none
                focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                {...register("description", { required: true })}
+                rows={5}
+                {...register("description", {
+                  required: "Description is required",
+                })}
               />
               {errors.description && (
                 <span className="text-sm text-red-500">
-                  This field is required
+                  {errors.description.message}
                 </span>
               )}
             </div>
 
             <div>
-              <Label
-                htmlFor="image"
-                className="block text-sm font-medium text-gray-700 mb-3"
-              >
-                Course Thumbnail
-              </Label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-purple-500 transition-colors">
+              <Label htmlFor="image">Course Thumbnail</Label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-purple-500">
                 <label
                   htmlFor="image"
                   className="flex flex-col items-center justify-center cursor-pointer"
@@ -181,7 +203,7 @@ const CourseForm = () => {
                     <Upload className="h-8 w-8 text-purple-600" />
                   </div>
                   <span className="text-sm font-medium text-gray-700">
-                    Drag and drop your image here or click to browse
+                    Drag and drop or click to browse
                   </span>
                   <span className="text-xs text-gray-500 mt-1">
                     PNG, JPG or WEBP (max. 2MB)
@@ -191,7 +213,7 @@ const CourseForm = () => {
                     id="image"
                     accept="image/png, image/jpeg, image/webp"
                     className="hidden"
-                    {...register("image", { required: true })}
+                    {...register("image")}
                     onChange={(e) => {
                       handleImageChange(e);
                       register("image").onChange(e);
@@ -201,7 +223,7 @@ const CourseForm = () => {
               </div>
               {errors.image && (
                 <span className="text-sm text-red-500">
-                  This field is required
+                  {errors.image.message}
                 </span>
               )}
             </div>
@@ -221,23 +243,16 @@ const CourseForm = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-gray-500" />
-                  Featured
-                </Label>
+                <Label>Featured</Label>
                 <div className="flex items-center space-x-4 mt-1">
                   <div className="flex items-center">
                     <Input
                       type="radio"
                       id="featured-yes"
                       value="true"
-                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300"
-                      {...register("featured", { required: true })}
+                      {...register("featured", { required: "Required" })}
                     />
-                    <Label
-                      htmlFor="featured-yes"
-                      className="ml-2 text-sm text-gray-700"
-                    >
+                    <Label htmlFor="featured-yes" className="ml-2">
                       Yes
                     </Label>
                   </div>
@@ -246,55 +261,42 @@ const CourseForm = () => {
                       type="radio"
                       id="featured-no"
                       value="false"
-                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300"
-                      {...register("featured", { required: true })}
+                      {...register("featured", { required: "Required" })}
                     />
-                    <Label
-                      htmlFor="featured-no"
-                      className="ml-2 text-sm text-gray-700"
-                    >
+                    <Label htmlFor="featured-no" className="ml-2">
                       No
                     </Label>
                   </div>
                 </div>
                 {errors.featured && (
                   <span className="text-sm text-red-500">
-                    This field is required
+                    {errors.featured.message}
                   </span>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label
-                  htmlFor="category"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Category
-                </Label>
+                <Label htmlFor="category">Category</Label>
                 <Controller
                   name="category"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: "Category is required" }}
                   render={({ field }) => (
-                    <div
+                    <SelectInp
+                      id="category"
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select Category"
                       onMouseOver={() => {
                         if (category.length < 1) fetchCategories();
                       }}
-                    >
-                      <SelectInp
-                        id="category"
-                        value={field.value}
-                        onChange={field.onChange}
-                        placeholder="Select Category"
-                        className="w-full border-gray-300 focus:border-purple-500 focus:ring-purple-500"
-                        data={category}
-                      />
-                    </div>
+                      data={category || []}
+                    />
                   )}
                 />
                 {errors.category && (
                   <span className="text-sm text-red-500">
-                    This field is required
+                    {errors.category.message}
                   </span>
                 )}
               </div>
@@ -303,18 +305,19 @@ const CourseForm = () => {
             <div className="mt-10 flex items-center justify-end gap-4">
               <Button
                 type="button"
-                onClick={() => router.push("manage-course")}
+                onClick={() =>
+                  router.push("/institute-dashboard/courses/manage-course")
+                }
                 variant="outline"
-                className="px-6 py-2 border-gray-300 text-gray-700 hover:bg-gray-50"
               >
                 Back
               </Button>
               <Button
-                type="submit"
-                disabled={loader}
                 className="px-6 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium rounded-md transition-all"
+                type="submit"
+                disabled={!isDirty || loader}
               >
-                {loader ? "Creating Course..." : "Create Course"}
+                {loader ? "Updating Course..." : "Update Course"}
               </Button>
             </div>
           </CardContent>
@@ -324,4 +327,4 @@ const CourseForm = () => {
   );
 };
 
-export default CourseForm;
+export default CourseFormUpdate;

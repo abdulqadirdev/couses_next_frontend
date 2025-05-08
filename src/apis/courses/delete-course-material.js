@@ -2,25 +2,13 @@
 import { cookies } from "next/headers";
 import useFetch from "../../hooks/useFetch";
 
-export default async function updateCourseModule({ id = "", data }) {
+export default async function deleteCourseMaterial(id) {
   try {
-    console.log("id==>", id, data);
-
-    if (!id) {
-      return {
-        success: false,
-        error: "Module id is not provided",
-      };
-    }
     let token = (await cookies()).get("auth-token")?.value;
 
-    const endpoint = `courses/category/${id}`;
-    console.log(endpoint);
-
     const response = await useFetch({
-      endpoint,
-      method: "PUT",
-      data,
+      endpoint: "courses/delete-items/" + id,
+      method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -41,7 +29,7 @@ export default async function updateCourseModule({ id = "", data }) {
   } catch (error) {
     return {
       success: false,
-      error: error.message || "Failed to update module!",
+      error: error.message || "Failed to delete course material!",
     };
   }
 }

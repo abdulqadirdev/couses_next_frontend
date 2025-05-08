@@ -1,65 +1,64 @@
 "use client";
 import { Upload, BookOpen, Clock } from "lucide-react";
-import TextArea from "../element-components/text-area";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { SelectInp } from "../element-components/select-inp";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Separator } from "../ui/separator";
+import TextArea from "../../element-components/text-area";
+import { Input } from "../../ui/input";
+import { Label } from "../../ui/label";
+import { Button } from "../../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { fileStore } from "@/store/file-upload";
-import updateCourse from "@/apis/courses/update-course";
 import { useEffect, useState } from "react";
-import CustomToastMsg from "../toast-message";
+import CustomToastMsg from "../../toast-message";
 import courseStore from "@/store/courses-store";
+import updateCourseMaterial from "@/apis/courses/update-course-material";
+import pdfImg from "@/assets/images/pdf.png";
+import wordImg from "@/assets/images/word.jpeg";
+import Link from "next/link";
+import Image from "next/image";
 
-const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
-  const { fetchSingleCourse, singleCourse, fetchCategories, category } =
-    courseStore();
+const CourseMaterialFormUpdate = ({ courseId }: { courseId: string }) => {
+  const { fetchSingleMaterial, singleMaterial } = courseStore();
+  console.log(singleMaterial);
 
-  const { fileUploader, fileUrl } = fileStore();
+  const { fileUploader, fileloader } = fileStore();
   const router = useRouter();
 
   const [preview, setPreview] = useState<string | null | undefined>(null);
   const [loader, setLoader] = useState<boolean>(false);
+  const [type, setType] = useState<string>("");
 
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors, isDirty },
     reset,
   } = useForm({
     defaultValues: {
       title: "",
-      level: "",
-      image: "",
+      url: "",
       description: "",
-      category: "",
-      featured: "false",
     },
   });
 
   useEffect(() => {
-    fetchSingleCourse(courseId);
+    fetchSingleMaterial(courseId);
   }, [courseId]);
 
   useEffect(() => {
-    if (singleCourse) {
+    if (singleMaterial) {
       reset({
-        title: singleCourse.title,
-        level: singleCourse.level,
-        image: singleCourse.image ?? undefined,
-        description: singleCourse.description,
-        category: singleCourse.category,
-        featured: singleCourse.featured ? "true" : "false",
+        title: singleMaterial.title,
+        url: singleMaterial.url ?? undefined,
+        description: singleMaterial.description,
       });
+      console.log(singleMaterial.url);
 
-      setPreview(singleCourse.image);
+      setPreview(singleMaterial.url);
+      setType(singleMaterial.type);
     }
-  }, [singleCourse, reset]);
+  }, [singleMaterial, reset]);
+
   interface Message {
     error: boolean;
     message: string;
@@ -70,25 +69,38 @@ const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
     message: "",
   });
 
-  const levelData = [
-    { title: "Beginner" },
-    { title: "Intermediate" },
-    { title: "Advanced" },
-  ];
+  const checkType = (mimeType: any) => {
+    if (mimeType.startsWith("video/")) {
+      return "video";
+    } else if (mimeType === "application/pdf") {
+      return "pdf";
+    } else if (
+      mimeType === "application/msword" ||
+      mimeType ===
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
+      return "word";
+    } else {
+      return "unknown";
+    }
+  };
 
   const onSubmit = async (data: any) => {
-    setLoader(true);
     try {
-      if (data.image instanceof FileList) {
+      if (data.url instanceof FileList) {
         const formData = new FormData();
-        formData.append("file", data.image[0]);
+        formData.append("file", data.url[0]);
         await fileUploader(formData);
-        data.image = fileStore.getState().fileUrl || preview;
+        data.url = fileStore.getState().fileUrl || preview;
       } else {
-        data.image = preview;
+        data.url = preview;
       }
 
-      const updated = await updateCourse({ id: courseId, data });
+      data.type = type;
+      setLoader(true);
+
+      const updated = await updateCourseMaterial({ id: courseId, data });
+      console.log(updated.error, updated);
 
       if (updated.error) {
         setMessage({ error: true, message: updated.error });
@@ -107,6 +119,8 @@ const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    setType(checkType(file?.type));
+    alert(checkType(file?.type));
     if (file) {
       setPreview(URL.createObjectURL(file));
     }
@@ -120,17 +134,21 @@ const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
         </CustomToastMsg>
       )}
 
-      {loader && (
-        <div className="fixed top-0 left-0 z-20 h-screen w-full bg-white/10 flex justify-center items-center">
-          <span className="loader-2"></span>
+      {(fileloader || loader) && (
+        <div className="fixed top-0 left-0 z-50 h-[100vh] w-full bg-white/50 backdrop-blur-sm flex flex-col justify-center items-center space-y-4">
+          <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-white text-sm font-medium animate-pulse">
+            {fileloader ? `Uploading ${type}...` : "Updating Document..."}
+          </span>
         </div>
       )}
+
       <form onSubmit={handleSubmit(onSubmit)}>
         <Card className="max-w-5xl mx-auto mt-10 border-0 shadow-xl overflow-hidden">
           <CardHeader className="bg-gradient-to-r from-purple-600 to-indigo-600 py-6">
             <CardTitle className="text-2xl font-bold text-white flex items-center gap-2">
               <BookOpen className="h-6 w-6" />
-              Update Course
+              Update Course Material
             </CardTitle>
           </CardHeader>
 
@@ -149,28 +167,15 @@ const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
                   </span>
                 )}
               </div>
-
               <div className="space-y-2">
-                <Label htmlFor="level">Difficulty Level</Label>
-                <Controller
-                  name="level"
-                  control={control}
-                  rules={{ required: "Level is required" }}
-                  render={({ field }) => (
-                    <SelectInp
-                      id="level"
-                      data={levelData}
-                      value={field.value}
-                      placeholder="Select Level"
-                      onChange={field.onChange}
-                    />
-                  )}
+                <Label htmlFor="module">Course Module</Label>
+                <Input
+                  id="module"
+                  placeholder="e.g. Advanced React Development"
+                  readOnly
+                  defaultValue={singleMaterial?.category.title}
+                  disabled
                 />
-                {errors.level && (
-                  <span className="text-sm text-red-500">
-                    {errors.level.message}
-                  </span>
-                )}
               </div>
             </div>
 
@@ -182,7 +187,7 @@ const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
                focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
                 rows={5}
                 {...register("description", {
-                  required: "Description is required",
+                  required: "description is required",
                 })}
               />
               {errors.description && (
@@ -193,10 +198,10 @@ const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
             </div>
 
             <div>
-              <Label htmlFor="image">Course Thumbnail</Label>
+              <Label htmlFor="icon">Course Thumbnail</Label>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-purple-500">
                 <label
-                  htmlFor="image"
+                  htmlFor="icon"
                   className="flex flex-col items-center justify-center cursor-pointer"
                 >
                   <div className="h-16 w-16 rounded-full bg-purple-100 flex items-center justify-center mb-4">
@@ -210,103 +215,62 @@ const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
                   </span>
                   <Input
                     type="file"
-                    id="image"
+                    id="icon"
                     accept="image/png, image/jpeg, image/webp"
                     className="hidden"
-                    {...register("image")}
+                    {...register("url")}
                     onChange={(e) => {
                       handleImageChange(e);
-                      register("image").onChange(e);
+                      register("url").onChange(e);
                     }}
                   />
                 </label>
               </div>
-              {errors.image && (
+              {errors.url && (
                 <span className="text-sm text-red-500">
-                  {errors.image.message}
+                  {errors.url.message}
                 </span>
               )}
             </div>
-
             {preview && (
               <div className="mt-4">
                 <p className="text-sm text-gray-600 mb-2">Preview:</p>
-                <img
-                  src={preview}
-                  alt="Image Preview"
-                  className="max-h-48 rounded-md border"
-                />
+                {type === "image" ? (
+                  <img
+                    src={preview}
+                    alt="File Preview"
+                    className="max-h-48 rounded-md border"
+                  />
+                ) : type === "video" ? (
+                  <video
+                    src={preview}
+                    className="max-h-48 rounded-md border"
+                    controls
+                    muted
+                  ></video>
+                ) : null}
+
+                {(type === "pdf" || type === "word") && (
+                  <Link
+                    href={preview}
+                    target="_blank"
+                    className="inline-block max-w-56"
+                  >
+                    <Image
+                      src={type === "pdf" ? pdfImg : wordImg}
+                      alt="File Preview"
+                      className="max-h-48 max-w-56 rounded-md border"
+                    />
+                  </Link>
+                )}
               </div>
             )}
-
-            <Separator className="my-6" />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label>Featured</Label>
-                <div className="flex items-center space-x-4 mt-1">
-                  <div className="flex items-center">
-                    <Input
-                      type="radio"
-                      id="featured-yes"
-                      value="true"
-                      {...register("featured", { required: "Required" })}
-                    />
-                    <Label htmlFor="featured-yes" className="ml-2">
-                      Yes
-                    </Label>
-                  </div>
-                  <div className="flex items-center">
-                    <Input
-                      type="radio"
-                      id="featured-no"
-                      value="false"
-                      {...register("featured", { required: "Required" })}
-                    />
-                    <Label htmlFor="featured-no" className="ml-2">
-                      No
-                    </Label>
-                  </div>
-                </div>
-                {errors.featured && (
-                  <span className="text-sm text-red-500">
-                    {errors.featured.message}
-                  </span>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <Controller
-                  name="category"
-                  control={control}
-                  rules={{ required: "Category is required" }}
-                  render={({ field }) => (
-                    <SelectInp
-                      id="category"
-                      value={field.value}
-                      onChange={field.onChange}
-                      placeholder="Select Category"
-                      onMouseOver={() => {
-                        if (category.length < 1) fetchCategories();
-                      }}
-                      data={category || []}
-                    />
-                  )}
-                />
-                {errors.category && (
-                  <span className="text-sm text-red-500">
-                    {errors.category.message}
-                  </span>
-                )}
-              </div>
-            </div>
 
             <div className="mt-10 flex items-center justify-end gap-4">
               <Button
                 type="button"
                 onClick={() =>
-                  router.push("/institute-dashboard/courses/manage-course")
+                  router.push("/institute-dashboard/courses/course-material")
                 }
                 variant="outline"
               >
@@ -327,4 +291,4 @@ const CourseFormUpdate = ({ courseId }: { courseId: string }) => {
   );
 };
 
-export default CourseFormUpdate;
+export default CourseMaterialFormUpdate;

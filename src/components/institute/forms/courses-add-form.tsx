@@ -1,21 +1,21 @@
 "use client";
 import { Upload, BookOpen, Clock } from "lucide-react";
-import TextArea from "../element-components/text-area";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { SelectInp } from "../element-components/select-inp";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import TextArea from "../../element-components/text-area";
+import { Input } from "../../ui/input";
+import { Label } from "../../ui/label";
+import { SelectInp } from "../../element-components/select-inp";
+import { Button } from "../../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
+import { Separator } from "../../ui/separator";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { fileStore } from "@/store/file-upload";
-import createCourseMaterial from "@/apis/courses/create-course-material";
+import createCourse from "@/apis/courses/create-course";
 import { useState } from "react";
-import CustomToastMsg from "../toast-message";
+import CustomToastMsg from "../../toast-message";
 import courseStore from "@/store/courses-store";
-import userStore from "@/store/user-store";
 
-const CourseMaterialForm = () => {
+const CourseForm = () => {
   const {
     register,
     handleSubmit,
@@ -29,49 +29,31 @@ const CourseMaterialForm = () => {
     message: string;
   }
   const [preview, setPreview] = useState<string | null>(null);
-  const { fileUploader, loader } = fileStore();
+  const { fileUploader, fileloader } = fileStore();
   const [message, setMessage] = useState<Message>({
     error: false,
     message: "",
   });
-  const { user } = userStore();
-  const ownerId = user?.owner;
+  const { fetchCategories, category } = courseStore();
+  console.log(category);
 
-  const { courseList, fetchCourseList } = courseStore();
-
+  const levelData = [
+    { title: "Beginner" },
+    { title: "Intermediate" },
+    { title: "Advanced" },
+  ];
   const router = useRouter();
 
   const onSubmit = async (data: any) => {
     try {
       let formData = new FormData();
-      formData.append("file", data.url[0]);
-      let mimeType = data.url[0].type;
-      let type = "";
-
-      if (mimeType.startsWith("video/")) {
-        type = "video";
-      } else if (mimeType === "application/pdf") {
-        type = "pdf";
-      } else if (
-        mimeType === "application/msword" ||
-        mimeType ===
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-      ) {
-        type = "word";
-      } else {
-        type = "unknown";
-      }
-      console.log("file=>>>>",type, data.url[0]);
+      formData.append("file", data.image[0]);
 
       await fileUploader(formData);
       const uploadedUrl = fileStore.getState().fileUrl;
-      data.url = uploadedUrl;
-      data.type = type;
-      console.log(data, type);
+      data.image = uploadedUrl;
 
-      let created = await createCourseMaterial({ ...data, institute: ownerId });
-      console.log("Response Back=>>>>", created);
-
+      let created = await createCourse(data);
       if (created.error) {
         setMessage({ error: true, message: created.error });
       } else {
@@ -105,7 +87,7 @@ const CourseMaterialForm = () => {
           <CardHeader className="bg-gradient-to-r from-purple-600 to-indigo-600 py-6">
             <CardTitle className="text-2xl font-bold text-white flex items-center gap-2">
               <BookOpen className="h-6 w-6" />
-              Create Course Material
+              Create New Course
             </CardTitle>
           </CardHeader>
 
@@ -116,7 +98,7 @@ const CourseMaterialForm = () => {
                   htmlFor="title"
                   className="text-sm font-medium text-gray-700"
                 >
-                  Title
+                  Course Title
                 </Label>
                 <Input
                   id="title"
@@ -136,26 +118,20 @@ const CourseMaterialForm = () => {
                   htmlFor="level"
                   className="text-sm font-medium text-gray-700"
                 >
-                  Select Module
+                  Difficulty Level
                 </Label>
                 <Controller
-                  name="category"
+                  name="level"
                   control={control}
                   rules={{ required: true }}
                   render={({ field }) => (
                     <SelectInp
-                      id="course"
+                      id="level"
                       className="w-full border-gray-300 focus:border-purple-500 focus:ring-purple-500"
-                      data={courseList}
-                      placeholder="Select Module"
+                      data={levelData}
+                      placeholder="Select Level"
                       value={field.value}
-                      valueId={true}
                       onChange={field.onChange}
-                      onMouseOver={() => {
-                        if (courseList.length < 1) {
-                          fetchCourseList({ id: ownerId });
-                        }
-                      }}
                     />
                   )}
                 />
@@ -191,37 +167,39 @@ const CourseMaterialForm = () => {
 
             <div>
               <Label
-                htmlFor="icon"
+                htmlFor="image"
                 className="block text-sm font-medium text-gray-700 mb-3"
               >
-                Video / PDF / Image
+                Course Thumbnail
               </Label>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-purple-500 transition-colors">
                 <label
-                  htmlFor="url"
+                  htmlFor="image"
                   className="flex flex-col items-center justify-center cursor-pointer"
                 >
                   <div className="h-16 w-16 rounded-full bg-purple-100 flex items-center justify-center mb-4">
                     <Upload className="h-8 w-8 text-purple-600" />
                   </div>
                   <span className="text-sm font-medium text-gray-700">
-                    Drag and drop your file here or click to browse
+                    Drag and drop your image here or click to browse
                   </span>
-
+                  <span className="text-xs text-gray-500 mt-1">
+                    PNG, JPG or WEBP (max. 2MB)
+                  </span>
                   <Input
                     type="file"
-                    id="url"
-                    accept="video/*,image/*,.pdf"
+                    id="image"
+                    accept="image/png, image/jpeg, image/webp"
                     className="hidden"
-                    {...register("url", { required: true })}
+                    {...register("image", { required: true })}
                     onChange={(e) => {
                       handleImageChange(e);
-                      register("url").onChange(e);
+                      register("image").onChange(e);
                     }}
                   />
                 </label>
               </div>
-              {errors.url && (
+              {errors.image && (
                 <span className="text-sm text-red-500">
                   This field is required
                 </span>
@@ -239,10 +217,93 @@ const CourseMaterialForm = () => {
               </div>
             )}
 
+            <Separator className="my-6" />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-gray-500" />
+                  Featured
+                </Label>
+                <div className="flex items-center space-x-4 mt-1">
+                  <div className="flex items-center">
+                    <Input
+                      type="radio"
+                      id="featured-yes"
+                      value="true"
+                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300"
+                      {...register("featured", { required: true })}
+                    />
+                    <Label
+                      htmlFor="featured-yes"
+                      className="ml-2 text-sm text-gray-700"
+                    >
+                      Yes
+                    </Label>
+                  </div>
+                  <div className="flex items-center">
+                    <Input
+                      type="radio"
+                      id="featured-no"
+                      value="false"
+                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300"
+                      {...register("featured", { required: true })}
+                    />
+                    <Label
+                      htmlFor="featured-no"
+                      className="ml-2 text-sm text-gray-700"
+                    >
+                      No
+                    </Label>
+                  </div>
+                </div>
+                {errors.featured && (
+                  <span className="text-sm text-red-500">
+                    This field is required
+                  </span>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  htmlFor="category"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Category
+                </Label>
+                <Controller
+                  name="category"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <div
+                      onMouseOver={() => {
+                        if (category.length < 1) fetchCategories();
+                      }}
+                    >
+                      <SelectInp
+                        id="category"
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Select Category"
+                        className="w-full border-gray-300 focus:border-purple-500 focus:ring-purple-500"
+                        data={category}
+                      />
+                    </div>
+                  )}
+                />
+                {errors.category && (
+                  <span className="text-sm text-red-500">
+                    This field is required
+                  </span>
+                )}
+              </div>
+            </div>
+
             <div className="mt-10 flex items-center justify-end gap-4">
               <Button
                 type="button"
-                onClick={() => router.push("course-material")}
+                onClick={() => router.push("manage-course")}
                 variant="outline"
                 className="px-6 py-2 border-gray-300 text-gray-700 hover:bg-gray-50"
               >
@@ -250,10 +311,10 @@ const CourseMaterialForm = () => {
               </Button>
               <Button
                 type="submit"
-                disabled={loader}
+                disabled={fileloader}
                 className="px-6 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium rounded-md transition-all"
               >
-                {loader ? "Creating Module..." : "Create Module"}
+                {fileloader ? "Creating Course..." : "Create Course"}
               </Button>
             </div>
           </CardContent>
@@ -263,4 +324,4 @@ const CourseMaterialForm = () => {
   );
 };
 
-export default CourseMaterialForm;
+export default CourseForm;
