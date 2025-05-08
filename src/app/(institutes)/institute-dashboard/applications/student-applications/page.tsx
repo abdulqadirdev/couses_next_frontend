@@ -4,18 +4,21 @@ import userStore from "@/store/user-store";
 import Link from "next/link";
 import TableShow from "@/components/institute/tables/table";
 import deleteCourse from "@/apis/courses/delete-course";
-import CourseRow from "@/components/institute/tables/courses-row";
+import ApplicationRow from "@/components/institute/tables/application-row";
+import { applicationsStore } from "@/store/application-store";
 
-const Courses = () => {
+const StudentApplications = () => {
   const { user } = userStore();
   const ownerId = user?.owner;
 
-  const { ownCourses, pagination, loader, fetchOwnCourse, status } =
-    courseStore();
+  const { applications, pagination, loader, fetchAllApplications, status } =
+    applicationsStore();
 
   const tableHead = [
     { title: "Sno" },
-    { title: "Course Name" },
+    { title: "Student Name" },
+    { title: "Email" },
+    { title: "Status" },
     { title: "Created On" },
     { title: "Action" },
   ];
@@ -33,19 +36,19 @@ const Courses = () => {
         </Link>
       </div>
       <TableShow
-        data={ownCourses}
-        fetchData={fetchOwnCourse}
+        data={applications}
+        fetchData={fetchAllApplications}
         pagination={pagination}
         status={status}
         loader={loader}
         ownerId={ownerId}
-        initialParams="manage-course"
+        initialParams="student-applications"
         deleteFunc={deleteCourse}
         tableHead={tableHead}
-        TableRow={CourseRow}
+        TableRow={ApplicationRow}
       />
     </>
   );
 };
 
-export default Courses;
+export default StudentApplications;

@@ -3,9 +3,10 @@
 import courseStore from "@/store/courses-store";
 import userStore from "@/store/user-store";
 import Link from "next/link";
-import TableShow from "@/components/institute/table";
+import TableShow from "@/components/institute/tables/table";
 import deleteCourseMaterial from "@/apis/courses/delete-course-material";
 import { useState } from "react";
+import CourseRow from "@/components/institute/tables/courses-row";
 
 const CourseMaterial = () => {
   const { user } = userStore();
@@ -78,6 +79,7 @@ const CourseMaterial = () => {
         updatePageUrl="update-course-material"
         tableHead={tableHead}
         module={module}
+        TableRow={CourseRow}
       />
     </>
   );

@@ -43,11 +43,11 @@ export default function RootLayout({
               </header>
 
               {/* Main Content */}
-              <div className="m-3  h-[90vh]  overflow-y-auto transition-all duration-300 ">
+              <div className="m-3  h-[90vh]  overflow-y-auto transition-all duration-300 relative">
               {/* bg-white/5  backdrop-blur-sm border border-white/10 
               shadow-xl w-full py-5 rounded-3xl */}
                 <div
-                  className=""
+                  className="relative"
                 >
                   {children}
                 </div>

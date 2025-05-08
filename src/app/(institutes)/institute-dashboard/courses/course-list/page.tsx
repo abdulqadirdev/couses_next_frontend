@@ -3,8 +3,9 @@
 import courseStore from "@/store/courses-store";
 import userStore from "@/store/user-store";
 import Link from "next/link";
-import TableShow from "@/components/institute/table";
+import TableShow from "@/components/institute/tables/table";
 import deleteCourseList from "@/apis/courses/delete-course-list";
+import CourseRow from "@/components/institute/tables/courses-row";
 
 const CourseList = () => {
   const { user } = userStore();
@@ -46,6 +47,7 @@ const CourseList = () => {
         loaderMessage="Deleting Module..."
         updatePageUrl="update-course-list"
         tableHead={tableHead}
+        TableRow={CourseRow}
       />
     </>
   );
