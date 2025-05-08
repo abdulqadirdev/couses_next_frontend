@@ -67,6 +67,7 @@ const CourseMaterial = () => {
       </div>
       <TableShow
         data={courseMaterial}
+
         fetchData={fetchCourseMaterials}
         pagination={pagination}
         status={status}

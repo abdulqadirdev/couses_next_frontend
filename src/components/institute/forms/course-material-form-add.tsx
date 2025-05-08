@@ -14,8 +14,10 @@ import { useState } from "react";
 import CustomToastMsg from "../../toast-message";
 import courseStore from "@/store/courses-store";
 import userStore from "@/store/user-store";
+
 import pdfImg from "@/assets/images/pdf.png";
 import wordImg from "@/assets/images/word.jpeg";
+
 
 const CourseMaterialForm = () => {
   const {
@@ -37,12 +39,13 @@ const CourseMaterialForm = () => {
     error: false,
     message: "",
   });
-  const [loader, setLoader] = useState<boolean>(false);
 
+  const [loader, setLoader] = useState<boolean>(false);
   const { user } = userStore();
   const ownerId = user?.owner;
 
   const { courseList, fetchCourseList } = courseStore();
+
   console.log(preview);
 
   const router = useRouter();
@@ -61,11 +64,13 @@ const CourseMaterialForm = () => {
       return "unknown";
     }
   };
+
   const onSubmit = async (data: any) => {
     try {
       let formData = new FormData();
       formData.append("file", data.url[0]);
       let mimeType = data.url[0].type;
+
       let type = checkType(mimeType);
 
       console.log("file=>>>>", type, data.url[0]);
@@ -75,6 +80,7 @@ const CourseMaterialForm = () => {
       data.url = uploadedUrl;
       data.type = type;
       console.log(data, type);
+
       setLoader(true);
       let created = await createCourseMaterial({ ...data, institute: ownerId });
       console.log("Response Back=>>>>", created);
@@ -109,6 +115,7 @@ const CourseMaterialForm = () => {
           {message.message}
         </CustomToastMsg>
       )}
+
       {(fileloader || loader) && (
         <div className="fixed top-0 left-0 z-50 h-[100vh] w-full bg-white/50 backdrop-blur-sm flex flex-col justify-center items-center space-y-4">
           <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
@@ -238,7 +245,9 @@ const CourseMaterialForm = () => {
                   />
                 </label>
               </div>
+
               {errors.url && (
+
                 <span className="text-sm text-red-500">
                   This field is required
                 </span>
@@ -248,6 +257,7 @@ const CourseMaterialForm = () => {
             {preview && (
               <div className="mt-4">
                 <p className="text-sm text-gray-600 mb-2">Preview:</p>
+
                 {typeSet === "image" ||
                 typeSet === "pdf" ||
                 typeSet === "word" ? (

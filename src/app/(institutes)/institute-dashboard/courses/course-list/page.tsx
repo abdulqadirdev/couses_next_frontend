@@ -35,7 +35,7 @@ const CourseList = () => {
         </Link>
       </div>
       <TableShow
-        data={courseList}
+        data={[courseList]}
         fetchData={fetchCourseList}
         pagination={pagination}
         status={status}
