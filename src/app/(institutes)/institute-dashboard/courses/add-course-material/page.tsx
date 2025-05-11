@@ -1,4 +1,4 @@
-import CourseMaterialForm from "@/components/institute/course-material-form-add";
+import CourseMaterialForm from "@/components/institute/forms/course-material-form-add";
 
 const AddCourseMaterial = () => {
   return <CourseMaterialForm />;

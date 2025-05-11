@@ -8,7 +8,7 @@ import Link from "next/link";
 import courseStore from "@/store/courses-store";
 import { useEffect, useState } from "react";
 import { Award, Calendar, TrendingUp } from "lucide-react";
-import Skeleton from "./cardSkeleton";
+import Skeleton from "../skeletons/cardSkeleton";
 import CourseCard from "./course-card";
 
 export interface Course {

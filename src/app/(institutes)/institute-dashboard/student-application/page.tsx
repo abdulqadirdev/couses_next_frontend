@@ -1,6 +1,5 @@
 const StudentApplication = () => {
-    return (<>
-    </>)
+  return <h1>Hy</h1>;
 };
 
 export default StudentApplication;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Eye,
   Pencil,
@@ -15,7 +15,7 @@ import { DialogModal } from "@/components/shadcn-components/modal-box";
 import CustomToastMsg from "@/components/toast-message";
 import setMessageState from "@/helper/message-set";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import CourseRow from "./courses-row";
 
 interface Props {
   data: any;
@@ -31,6 +31,14 @@ interface Props {
   loaderMessage?: string;
   module?: string;
   tableHead?: { title: string }[] | [];
+  TableRow?: any;
+}
+
+interface QueriesType {
+  search: string;
+  limit: number;
+  page: number;
+  [key: string]: string | number;
 }
 
 const TableShow = ({
@@ -47,6 +55,7 @@ const TableShow = ({
   loaderMessage = "Deleting Module...",
   tableHead = [],
   module = "",
+  TableRow = null,
 }: Props) => {
 
   const [isDeleted, setDeleted] = useState<boolean>(false);
@@ -62,31 +71,23 @@ const TableShow = ({
     error: false,
     message: "",
   });
-
-  const router = useRouter();
-
-  interface QueriesType {
-    search: string;
-    limit: number;
-    page: number;
-    [key: string]: string | number;
-  }
-
   const [queries, setQueries] = useState<QueriesType>({
     search: "",
     limit: 5,
     page: 1,
   });
 
+  const obj = { ...queries, id: module ? module : ownerId };
+  const router = useRouter();
+
   const toggleModal = (dialog: string) => {
-    setOpen((prev: any) => ({ ...prev, [dialog]: !prev[dialog] }));
+    setOpen((prev) => ({ ...prev, [dialog]: !prev[dialog] }));
   };
 
   const handleDelete = async () => {
     try {
       setDeleted(true);
       const res = await deleteFunc(selectedCourse._id);
-      console.log(res);
       setDeleted(false);
       setMessageState(res, setMessage);
       toggleModal("deleted");
@@ -105,8 +106,6 @@ const TableShow = ({
         }
       }
       router.push(initialParams + "?" + searchParams.toString());
-
-      const obj = { ...queries, id: module ? module : ownerId };
       fetchData(obj);
     }
   }, [queries, message.message, module]);
@@ -169,6 +168,40 @@ const TableShow = ({
     return new Date(dateString).toLocaleDateString("en-US", options);
   };
 
+  // Memoized table
+  const memoizedTable = useMemo(() => {
+    return (
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-purple-600 text-white">
+          <tr>
+            {tableHead?.map((theading: { title: string }, i: number) => (
+              <th
+                key={i}
+                className="p-3 text-left text-xs font-medium uppercase tracking-wider"
+              >
+                {theading.title}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        {TableRow && (
+          <TableRow
+            data={data}
+            queries={queries}
+            formatDate={formatDate}
+            setOpen={setOpen}
+            status={status}
+            deleteFunc={deleteFunc}
+            updatePageUrl={updatePageUrl}
+            setCourse={setCourse}
+            refetchData={fetchData}
+            obj={obj}
+          />
+        )}
+      </table>
+    );
+  }, [data, queries, status, updatePageUrl, tableHead]);
+
   return (
     <div className="w-full px-2 sm:px-6 md:px-8 max-w-7xl mx-auto">
       {loader && (
@@ -215,96 +248,20 @@ const TableShow = ({
       </div>
 
       <div className="bg-white rounded-lg shadow overflow-hidden w-full">
-        <div className="overflow-x-auto w-full">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-purple-600 text-white">
-              <tr>
-                {tableHead?.map((theading: { title: string }, i: number) => (
-                  <th
-                    key={i}
-                    className="p-3 text-left text-xs font-medium uppercase tracking-wider"
-                  >
-                    {theading.title}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {data.length > 0 ? (
-                data.map((elem: any, i: any) => (
-                  <tr key={i} className="hover:bg-gray-50">
-                    <td className="p-3 whitespace-nowrap text-sm text-gray-500">
-                      {(queries.page - 1) * queries.limit + i + 1}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900 flex gap-2 items-center">
-                        {(elem.image || elem.icon) && (
-                          <img
-                            src={elem.image || elem.icon}
-                            className="w-12 h-12 p-2 object-contain rounded-xl bg-gray-200"
-                            alt={elem.title}
-                          />
-                        )}
-                        <span>{elem.title}</span>
-                      </div>
-                    </td>
-                    <td className="p-3 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(elem.createdAt)}
-                    </td>
+        <div className="overflow-x-auto w-full">{memoizedTable}</div>
 
-                    <td className="p-3 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <Button
-                          onClick={() =>
-                            router.push(updatePageUrl + "/" + elem._id)
-                          }
-                          className="text-white bg-blue-400"
-                          title="Edit"
-                        >
-                          <Pencil size={16} />
-                        </Button>
-                        {deleteFunc && (
-                          <Button
-                            onClick={() => {
-                              setOpen({ ...open, deleted: true });
-                              setCourse(elem);
-                            }}
-                            className="text-white bg-red-400"
-                            title="Delete"
-                          >
-                            <Trash2 size={16} />
-                          </Button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="text-center py-6 text-sm text-gray-500 font-medium"
-                  >
-                    {status === null ? "Data fetching!" : "No Data Found!"}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-
-          {open.deleted && (
-            <DialogModal
-              modalTitle="Confirm Box"
-              open={open.deleted}
-              onClose={() => toggleModal("deleted")}
-              message={`Are you sure you want to delete ${selectedCourse?.title} course!`}
-              btnText={btnText}
-              onClick={handleDelete}
-              loader={isDeleted}
-              loaderMessage={loaderMessage}
-            />
-          )}
-        </div>
+        {open.deleted && (
+          <DialogModal
+            modalTitle="Confirm Box"
+            open={open.deleted}
+            onClose={() => toggleModal("deleted")}
+            message={`Are you sure you want to delete ${selectedCourse?.title} course!`}
+            btnText={btnText}
+            onClick={handleDelete}
+            loader={isDeleted}
+            loaderMessage={loaderMessage}
+          />
+        )}
       </div>
 
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 bg-white rounded-lg shadow px-4 py-3">

@@ -1,5 +1,5 @@
 "use server"
-import CourseMaterialFormUpdate from "@/components/institute/update-course-material";
+import CourseMaterialFormUpdate from "@/components/institute/forms/update-course-material";
 
 interface Params {
   params: { id: string };

@@ -1,8 +1,7 @@
-const Skeleton = () => {
-
+const Skeleton = ({ number = 4 }: { number?: number }) => {
   return (
     <>
-      {Array.from({ length: 4 }).map((_, index) => (
+      {Array.from({ length: number }).map((_, index) => (
         <div
           key={index}
           className="rounded-2xl border border-gray-700/50 bg-gray-800/50 backdrop-blur-sm p-4 animate-pulse"

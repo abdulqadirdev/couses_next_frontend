@@ -39,11 +39,11 @@ const CourseCard = ({course}: {course:Course}) => {
           </span>
         </div>
 
-        <div className="relative mb-5 overflow-hidden aspect-video bg-gray-900/50 border border-gray-800/50 group-hover:border-purple-500/30 transition-all duration-300 rounded-xl">
+        <div className="relative mb-5 overflow-hidden aspect-video  bg-gray-900/50 border border-gray-800/50 group-hover:border-purple-500/30 transition-all duration-300 rounded-xl">
           <img
             src={course.image ?? "/placeholder.png"}
             alt={course.title}
-            className="object-contain w-full h-full transform group-hover:scale-110 transition-all duration-700"
+            className="object-contain w-full h-full rounded-lg transform group-hover:scale-110 transition-all duration-700"
           />
           {course.featured && (
             <div className="absolute top-3 right-3 z-20 flex items-center space-x-1 px-3 py-1 rounded-full bg-purple-900/70 backdrop-blur-sm border border-purple-700/50">
