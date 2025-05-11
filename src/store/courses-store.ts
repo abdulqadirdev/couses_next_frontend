@@ -15,10 +15,10 @@ export interface Course {
   image: string | null | undefined;
   level: string;
   category: string;
-  createdBy: { instituteName: string; instituteLogo: string };
+  createdBy: { instituteName: string; instituteLogo: string; _id: string };
   featured: boolean;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: any;
+  updatedAt: any;
   __v: number;
 }
 
@@ -57,6 +57,7 @@ interface Pagination {
   limit?: number;
   page?: number;
   pages?: number;
+  totalPages: number;
 }
 
 interface GetCoursesResponse {
@@ -122,9 +123,12 @@ const courseStore = create<CourseStore>((set) => ({
   filteredCourse: async (params = {}) => {
     set({ loader: true });
     const res: GetCoursesResponse = await getCourses(params);
+    console.log(res);
+
     if (res.success) {
       set({
         courses: res.data?.courses || [],
+        pagination: res.data?.pagination || null,
         status: true,
         loader: false,
         error: null,
@@ -141,6 +145,8 @@ const courseStore = create<CourseStore>((set) => ({
   fetchAllCourses: async (params = {}) => {
     set({ loader2: true });
     const res: GetCoursesResponse = await getCourses(params);
+    console.log(res);
+
     if (res.success) {
       set({
         courses2: res.data?.courses || [],
@@ -162,6 +168,8 @@ const courseStore = create<CourseStore>((set) => ({
     try {
       set({ loader: true });
       const res: GetCoursesResponse = await getOwnCourses(params);
+      console.log("Fetch Own", res);
+
       if (res.success) {
         set({
           ownCourses: res.data?.courses || [],
@@ -186,7 +194,6 @@ const courseStore = create<CourseStore>((set) => ({
       });
     }
   },
-
 
   fetchSingleCourse: async (id: string) => {
     try {
@@ -221,7 +228,7 @@ const courseStore = create<CourseStore>((set) => ({
       set({ loader: true });
       const res: GetCoursesResponse = await getCategories();
       console.log(res);
-      
+
       if (res.success) {
         set({
           category: res.data?.category || [],
@@ -302,7 +309,6 @@ const courseStore = create<CourseStore>((set) => ({
       });
     }
   },
-
 
   fetchCourseMaterials: async (params = {}) => {
     try {

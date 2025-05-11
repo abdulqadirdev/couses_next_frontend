@@ -20,20 +20,21 @@ const StudentApplications = () => {
     { title: "Email" },
     { title: "Status" },
     { title: "Created On" },
+    { title: "Course Duration" },
     { title: "Action" },
   ];
   return (
     <>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 px-2 sm:px-6 md:px-8">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
-          Course Management
+          Student Applications
         </h1>
-        <Link
+        {/* <Link
           href="add-course"
           className="border-1 border-gray-300 py-2 px-4 rounded-lg text-sm"
         >
           Add Course
-        </Link>
+        </Link> */}
       </div>
       <TableShow
         data={applications}

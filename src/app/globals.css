@@ -6,6 +6,7 @@ html,
 body {
   all: unset;
   font-family: sans-serif;
+  scroll-behavior: smooth;
 }
 
 @layer base {

@@ -7,12 +7,15 @@ export default async function getCourses({
   search = "",
   featured = "",
   category = "",
+  id = "",
+  sort = 1,
+  level = "",
 }) {
   try {
-console.log("categories",category);
+    console.log("categories", category);
 
     let endpoint = "courses";
-    let queries = `?limit=${limit}&page=${page}&search=${search}&featured=${featured}&category=${category}`;
+    let queries = `?id=${id}&sort=${sort}&level=${level}&limit=${limit}&page=${page}&search=${search}&featured=${featured}&category=${category}`;
 
     const response = await useFetch({
       endpoint: endpoint + queries,

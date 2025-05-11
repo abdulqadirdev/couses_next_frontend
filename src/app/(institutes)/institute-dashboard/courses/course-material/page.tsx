@@ -23,7 +23,6 @@ const CourseMaterial = () => {
     status,
   } = courseStore();
 
-  console.log(pagination, courseList);
   const tableHead = [
     { title: "Sno" },
     { title: "Course Material" },
@@ -67,7 +66,6 @@ const CourseMaterial = () => {
       </div>
       <TableShow
         data={courseMaterial}
-
         fetchData={fetchCourseMaterials}
         pagination={pagination}
         status={status}

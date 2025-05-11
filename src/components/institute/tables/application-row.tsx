@@ -17,36 +17,57 @@ const ApplicationRow = ({
   queries,
   data,
   formatDate,
-  deleteFunc,
-  setOpen,
-  setCourse,
   status,
   refetchData = null,
   obj = null,
 }: any) => {
-  const [selectInp, setSelectInp] = useState<{ value: string; id: string }>({
+  interface SelectedType {
+    id: string;
+    selected: {
+      status: string;
+      duration: string;
+    };
+  }
+  const [selectInp, setSelectInp] = useState<SelectedType>({
     id: "",
-    value: "",
+    selected: {
+      status: "",
+      duration: "3 months",
+    },
   });
   const [message, setMessage] = useState<{ error: boolean; message: string }>({
     error: false,
     message: "",
   });
 
-  console.log(selectInp);
+  console.log("Selected", selectInp);
+
+  const handleSelect = (e: { name: string; value: string }, id: string) => {
+    const { name, value } = e;
+    setSelectInp((prev) => ({
+      id,
+      selected: {
+        ...prev.selected,
+        [name]: value,
+      },
+    }));
+  };
 
   const updateCourse = async () => {
-    if (!selectInp.value) return;
+    if (!selectInp.selected.status) return;
 
     try {
-      let data = {
-        status: selectInp.value,
-      };
+      let data = selectInp.selected;
+      console.log("Obj Prepared", {
+        id: selectInp.id,
+        data,
+      });
+
       let res = await updateApplication({
         id: selectInp.id,
         data,
       });
-      console.log(res);
+      console.log("updated=>>>>", res);
 
       setMessageState(res, setMessage);
     } catch (error) {
@@ -56,8 +77,11 @@ const ApplicationRow = ({
   };
   useEffect(() => {
     updateCourse();
-    refetchData && selectInp && refetchData(obj);
-  }, [selectInp]);
+
+    refetchData &&
+      (selectInp.selected.status || selectInp.selected.duration) &&
+      refetchData(obj);
+  }, [selectInp.selected.duration, selectInp.selected.status]);
 
   return (
     <tbody className="bg-white divide-y divide-gray-200">
@@ -112,9 +136,34 @@ const ApplicationRow = ({
             <td className="p-3 whitespace-nowrap text-sm font-medium">
               <div className="flex space-x-2 items-center">
                 <Select
-                  value={selectInp.value}
+                  value={selectInp.selected.duration}
                   onValueChange={(value) => {
-                    setSelectInp({ value, id: elem._id });
+                    handleSelect({ name: "duration", value }, elem._id);
+                  }}
+                >
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue
+                      placeholder={
+                        elem?.appliedBy?.institute?.duration || "Select"
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="3 months">3 Months</SelectItem>
+                    <SelectItem value="6 months">6 Months</SelectItem>
+                    <SelectItem value="1 year">1 Year</SelectItem>
+                    <SelectItem value="3 years">3 Year</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </td>
+
+            <td className="p-3 whitespace-nowrap text-sm font-medium">
+              <div className="flex space-x-2 items-center">
+                <Select
+                  value={selectInp.selected.status}
+                  onValueChange={(value) => {
+                    handleSelect({ name: "status", value }, elem._id);
                   }}
                 >
                   <SelectTrigger className="w-[120px]">
@@ -126,23 +175,10 @@ const ApplicationRow = ({
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="approved">Approved</SelectItem>
                     <SelectItem value="rejected">Reject</SelectItem>
                   </SelectContent>
                 </Select>
-                {deleteFunc && (
-                  <Button
-                    onClick={() => {
-                      setOpen({ deleted: true });
-                      setCourse(elem);
-                    }}
-                    className="text-white bg-red-400"
-                    title="Delete"
-                  >
-                    <Trash2 size={16} />
-                  </Button>
-                )}
               </div>
             </td>
           </tr>

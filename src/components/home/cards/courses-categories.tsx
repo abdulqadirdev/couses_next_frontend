@@ -1,19 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import courseStore from "@/store/courses-store";
-import Skeleton from "./cardSkeleton";
+import Skeleton from "../skeletons/cardSkeleton";
 import CourseCard from "./course-card";
-import ButtonSkeleton from "./button-skeleton";
+import ButtonSkeleton from "../skeletons/button-skeleton";
 import getSlug from "@/helper/get-slug";
+import { useRouter } from "next/navigation";
 
 interface Category {
   title: string;
 }
 
-const CoursesWithCategories = () => {
-  const { filteredCourse, courses, category, fetchCategories } = courseStore();
+const CoursesWithCategories = ({ queries }: any) => {
+  const {
+    filteredCourse,
+    courses: course2,
+    category,
+    fetchCategories,
+  } = courseStore();
 
+  const router = useRouter();
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [isLoading2, setIsLoading2] = useState(false);
@@ -27,15 +34,27 @@ const CoursesWithCategories = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    filteredCourse({ category: activeCategory, featured: false }).finally(() =>
-      setIsLoading(false)
-    );
-  }, [activeCategory]);
+    const searchParams = new URLSearchParams();
 
-  const categories: Category[] = category;
+    let query = { ...queries, category: activeCategory };
+    for (const key in queries) {
+      const value = queries[key];
+      if (value !== undefined && value !== null && value !== "") {
+        searchParams.append(key, String(value));
+      }
+    }
+    router.push("courses?" + searchParams.toString() + "#courses-section");
+
+    filteredCourse(query).finally(() => {
+      setIsLoading(false);
+    });
+  }, [activeCategory, queries]);
+
+  const categories: Category[] = useMemo(() => category, [category]);
+  const courses = useMemo(() => course2, [course2]);
 
   return (
-    <section className="relative w-full py-24 overflow-hidden bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800">
+    <div>
       {/* Glowing Background Circles */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-600 rounded-full opacity-10 blur-3xl"></div>
@@ -45,23 +64,6 @@ const CoursesWithCategories = () => {
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex flex-col items-center justify-center space-y-6 text-center mb-16">
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-purple-900/30 backdrop-blur-sm border border-purple-800/50">
-            <span className="animate-pulse mr-2 h-2 w-2 rounded-full bg-purple-400"></span>
-            <span className="text-sm font-medium text-purple-300">
-              Premium Courses
-            </span>
-          </div>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-300 to-purple-400 animate-gradient">
-              Expand Your Knowledge
-            </span>
-          </h2>
-          <p className="max-w-2xl text-gray-300 text-lg md:text-xl opacity-80">
-            Discover expert-led courses designed to help you master new skills
-            and advance your career
-          </p>
-        </div>
 
         {/* Category Filters */}
         <div className="flex flex-wrap justify-center gap-3 mb-16">
@@ -76,10 +78,10 @@ const CoursesWithCategories = () => {
           >
             All Courses
           </button>
-          {isLoading2 && <ButtonSkeleton />}
+          {isLoading2 && categories.length < 1 && <ButtonSkeleton />}
           {categories.map((category, index) => {
             const key = category.title || `category-${index}`;
-            const displaySlug =getSlug(category.title);
+            const displaySlug = getSlug(category.title);
 
             return (
               <button
@@ -119,7 +121,7 @@ const CoursesWithCategories = () => {
           )}
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 

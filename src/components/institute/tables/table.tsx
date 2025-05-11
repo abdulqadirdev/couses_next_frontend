@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Eye,
   Pencil,
@@ -15,7 +15,6 @@ import { DialogModal } from "@/components/shadcn-components/modal-box";
 import CustomToastMsg from "@/components/toast-message";
 import setMessageState from "@/helper/message-set";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import CourseRow from "./courses-row";
 
 interface Props {
@@ -35,6 +34,13 @@ interface Props {
   TableRow?: any;
 }
 
+interface QueriesType {
+  search: string;
+  limit: number;
+  page: number;
+  [key: string]: string | number;
+}
+
 const TableShow = ({
   data,
   pagination,
@@ -51,7 +57,6 @@ const TableShow = ({
   module = "",
   TableRow = null,
 }: Props) => {
-
   const [isDeleted, setDeleted] = useState<boolean>(false);
   const [open, setOpen] = useState<{ [key: string]: boolean }>({
     deleted: false,
@@ -70,26 +75,18 @@ const TableShow = ({
     limit: 5,
     page: 1,
   });
-  
+
   const obj = { ...queries, id: module ? module : ownerId };
   const router = useRouter();
 
-  interface QueriesType {
-    search: string;
-    limit: number;
-    page: number;
-    [key: string]: string | number;
-  }
-
   const toggleModal = (dialog: string) => {
-    setOpen((prev: any) => ({ ...prev, [dialog]: !prev[dialog] }));
+    setOpen((prev) => ({ ...prev, [dialog]: !prev[dialog] }));
   };
 
   const handleDelete = async () => {
     try {
       setDeleted(true);
       const res = await deleteFunc(selectedCourse._id);
-      console.log(res);
       setDeleted(false);
       setMessageState(res, setMessage);
       toggleModal("deleted");
@@ -108,12 +105,9 @@ const TableShow = ({
         }
       }
       router.push(initialParams + "?" + searchParams.toString());
-
       fetchData(obj);
     }
   }, [queries, message.message, module]);
-
-
 
   useEffect(() => {
     if (queries.limit > pagination?.total) {
@@ -171,6 +165,40 @@ const TableShow = ({
     return new Date(dateString).toLocaleDateString("en-US", options);
   };
 
+  // Memoized table
+  const memoizedTable = useMemo(() => {
+    return (
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-purple-600 text-white">
+          <tr>
+            {tableHead?.map((theading: { title: string }, i: number) => (
+              <th
+                key={i}
+                className="p-3 text-left text-xs font-medium uppercase tracking-wider"
+              >
+                {theading.title}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        {TableRow && (
+          <TableRow
+            data={data}
+            queries={queries}
+            formatDate={formatDate}
+            setOpen={setOpen}
+            status={status}
+            deleteFunc={deleteFunc}
+            updatePageUrl={updatePageUrl}
+            setCourse={setCourse}
+            refetchData={fetchData}
+            obj={obj}
+          />
+        )}
+      </table>
+    );
+  }, [data, queries, status, updatePageUrl, tableHead]);
+
   return (
     <div className="w-full px-2 sm:px-6 md:px-8 max-w-7xl mx-auto">
       {loader && (
@@ -217,50 +245,20 @@ const TableShow = ({
       </div>
 
       <div className="bg-white rounded-lg shadow overflow-hidden w-full">
-        <div className="overflow-x-auto w-full">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-purple-600 text-white">
-              <tr>
-                {tableHead?.map((theading: { title: string }, i: number) => (
-                  <th
-                    key={i}
-                    className="p-3 text-left text-xs font-medium uppercase tracking-wider"
-                  >
-                    {theading.title}
-                  </th>
-                ))}
-              </tr>
-            </thead>
+        <div className="overflow-x-auto w-full">{memoizedTable}</div>
 
-            {TableRow && (
-              <TableRow
-                data={data}
-                queries={queries}
-                formatDate={formatDate}
-                setOpen={setOpen}
-                status={status}
-                deleteFunc={deleteFunc}
-                updatePageUrl={updatePageUrl}
-                setCourse={setCourse}
-                refetchData={fetchData}
-                obj={obj}
-              />
-            )}
-          </table>
-
-          {open.deleted && (
-            <DialogModal
-              modalTitle="Confirm Box"
-              open={open.deleted}
-              onClose={() => toggleModal("deleted")}
-              message={`Are you sure you want to delete ${selectedCourse?.title} course!`}
-              btnText={btnText}
-              onClick={handleDelete}
-              loader={isDeleted}
-              loaderMessage={loaderMessage}
-            />
-          )}
-        </div>
+        {open.deleted && (
+          <DialogModal
+            modalTitle="Confirm Box"
+            open={open.deleted}
+            onClose={() => toggleModal("deleted")}
+            message={`Are you sure you want to delete ${selectedCourse?.title} course!`}
+            btnText={btnText}
+            onClick={handleDelete}
+            loader={isDeleted}
+            loaderMessage={loaderMessage}
+          />
+        )}
       </div>
 
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 bg-white rounded-lg shadow px-4 py-3">

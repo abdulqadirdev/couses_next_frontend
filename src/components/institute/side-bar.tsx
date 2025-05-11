@@ -6,6 +6,8 @@ import {
   FileBarChart,
   LayoutDashboard,
   LogOut,
+  Users2,
+  School2,
 } from "lucide-react";
 
 import {
@@ -21,12 +23,18 @@ import userStore from "@/store/user-store";
 import nextLogo from "@/assets/images/next.svg";
 import { useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const items = [
   {
     title: "Dashboard",
     url: "/institute-dashboard/dashboard",
     icon: LayoutDashboard,
+  },
+  {
+    title: "Your Account",
+    url: "/institute-dashboard/your-account",
+    icon: School2,
   },
   {
     title: "Courses",
@@ -43,7 +51,11 @@ const items = [
     url: "/institute-dashboard/courses/course-material",
     icon: Files,
   },
-  { title: "Student Applications", url: "/institute-dashboard/applications/student-applications", icon: FileBarChart },
+  {
+    title: "Student Applications",
+    url: "/institute-dashboard/applications/student-applications",
+    icon: FileBarChart,
+  },
   { title: "Logout", url: "#", icon: LogOut },
 ];
 
@@ -94,7 +106,7 @@ export function AppSidebar() {
                           <span className="truncate">{item.title}</span>
                         </button>
                       ) : (
-                        <a
+                        <Link
                           href={item.url}
                           className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                             isActive
@@ -104,7 +116,7 @@ export function AppSidebar() {
                         >
                           <item.icon className="h-5 w-5" />
                           <span className="truncate">{item.title}</span>
-                        </a>
+                        </Link>
                       )}
                     </SidebarMenuItem>
                   );

@@ -42,7 +42,7 @@ export const applicationsStore = create<ApplicationType>((set) => ({
 
       set({ loader: true });
       const res = await getAllApplications(params);
-      console.log(res);
+      console.log("Response=>>",res);
       if (res.success) {
         set({
           status: true,
