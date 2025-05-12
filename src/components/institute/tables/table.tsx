@@ -57,6 +57,7 @@ const TableShow = ({
   module = "",
   TableRow = null,
 }: Props) => {
+
   const [isDeleted, setDeleted] = useState<boolean>(false);
   const [open, setOpen] = useState<{ [key: string]: boolean }>({
     deleted: false,
@@ -108,6 +109,8 @@ const TableShow = ({
       fetchData(obj);
     }
   }, [queries, message.message, module]);
+
+
 
   useEffect(() => {
     if (queries.limit > pagination?.total) {

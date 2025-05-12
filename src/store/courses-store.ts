@@ -195,6 +195,7 @@ const courseStore = create<CourseStore>((set) => ({
     }
   },
 
+
   fetchSingleCourse: async (id: string) => {
     try {
       set({ loader: true });
@@ -309,6 +310,7 @@ const courseStore = create<CourseStore>((set) => ({
       });
     }
   },
+
 
   fetchCourseMaterials: async (params = {}) => {
     try {
