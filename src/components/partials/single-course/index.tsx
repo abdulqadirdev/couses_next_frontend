@@ -36,16 +36,6 @@ const SingleCourse = ({ id }: { id: string }) => {
 
   const courseData = singleCourse;
 
-  // Format date
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
   async function fetchCourse() {
     await fetchSingleCourse(id);
   }

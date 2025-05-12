@@ -14,7 +14,6 @@ import {
   RefreshCw,
 } from "lucide-react";
 import courseStore from "@/store/courses-store";
-import { useRouter } from "next/navigation";
 
 const CoursesPage = () => {
   const [level, setLevel] = useState("");
@@ -38,14 +37,13 @@ const CoursesPage = () => {
     level,
     featured,
     search: debounce,
-    limit: 3,
+    limit: 20,
     page: paginationNumber,
   };
   const obj = useMemo(
     () => queries,
     [level, featured, debounce, paginationNumber]
   );
-
 
   useEffect(() => {
     const timeOut = setTimeout(() => {
@@ -222,7 +220,7 @@ const CoursesPage = () => {
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" id="courses-section">
             <span className="text-sm font-medium text-gray-300">
               Page {pagination?.page} of {pagination?.totalPages}
             </span>
@@ -230,11 +228,8 @@ const CoursesPage = () => {
         </div>
 
         {/* Courses with Categories Component */}
-        <div
-          id="courses-section"
-          className="rounded-xl bg-gradient-to-br from-gray-900/80 via-gray-900/60 to-gray-800/80 p-4 shadow-lg backdrop-blur-sm"
-        >
-          <CoursesWithCategories queries={obj} />
+        <div className="rounded-xl bg-gradient-to-br from-gray-900/80 via-gray-900/60 to-gray-800/80 p-4 shadow-lg backdrop-blur-sm">
+          <CoursesWithCategories queries={obj} pageUrl={"courses"} />
         </div>
 
         {/* Static Pagination Buttons */}
@@ -303,7 +298,7 @@ const CoursesPage = () => {
             {/* Next Button */}
             <button
               onClick={() => setPaginationNumber(paginationNumber + 1)}
-              disabled={disAbledNext}
+              disabled={!disAbledNext ? true : disAbledNext}
               className={`flex h-10 items-center justify-center rounded-md border border-gray-700  px-3 text-sm font-medium text-white transition-all ${
                 disAbledNext
                   ? "bg-gray-500 opacity-60"

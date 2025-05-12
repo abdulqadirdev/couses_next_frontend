@@ -106,7 +106,7 @@ const FeaturedCourses = () => {
 
         <div className="mt-12 text-center">
           <Link
-            href="#categories"
+            href="courses"
             className="inline-flex items-center mb-3 text-sm font-medium text-purple-400 hover:text-purple-300"
           >
             View All Courses

@@ -12,7 +12,7 @@ interface Category {
   title: string;
 }
 
-const CoursesWithCategories = ({ queries }: any) => {
+const CoursesWithCategories = ({ queries, pageUrl = "/" }: any) => {
   const {
     filteredCourse,
     courses: course2,
@@ -43,7 +43,7 @@ const CoursesWithCategories = ({ queries }: any) => {
         searchParams.append(key, String(value));
       }
     }
-    router.push("courses?" + searchParams.toString() + "#courses-section");
+    router.push(pageUrl + "?" + searchParams.toString() + "#courses-section");
 
     filteredCourse(query).finally(() => {
       setIsLoading(false);
