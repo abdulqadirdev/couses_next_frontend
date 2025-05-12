@@ -1,7 +1,11 @@
 import resetSlug from "@/helper/reset-slug";
+import userStore from "@/store/user-store";
 import { Award, Calendar, ChevronRight, Sparkles } from "lucide-react";
+import Link from "next/link";
 
 const SingleCourseCard = ({ isLoaded, courseData }: any) => {
+  const { user } = userStore();
+  const isElgibile = user?.institute?.instituteId;
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -112,13 +116,26 @@ const SingleCourseCard = ({ isLoaded, courseData }: any) => {
                   : "translate-y-10 opacity-0"
               }`}
             >
-              <button className="relative overflow-hidden px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 group">
-                <span className="relative z-10 flex items-center justify-center">
-                  Enroll Now
-                  <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
-                </span>
-                <span className="absolute -inset-x-full bottom-0 h-px w-[200%] bg-gradient-to-r from-transparent via-white to-transparent animate-shimmer"></span>
-              </button>
+              {isElgibile ? (
+                <button className="relative overflow-hidden px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 group">
+                  <span className="relative z-10 flex items-center justify-center">
+                    Enroll Now
+                    <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                  </span>
+                  <span className="absolute -inset-x-full bottom-0 h-px w-[200%] bg-gradient-to-r from-transparent via-white to-transparent animate-shimmer"></span>
+                </button>
+              ) : (
+                <Link
+                  href={isElgibile || "#"}
+                  className="relative inline-block overflow-hidden px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 group"
+                >
+                  <span className="relative z-10 flex items-center justify-center">
+                    Enroll Now
+                    <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                  </span>
+                  <span className="absolute -inset-x-full bottom-0 h-px w-[200%] bg-gradient-to-r from-transparent via-white to-transparent animate-shimmer"></span>
+                </Link>
+              )}
             </div>
           </div>
 

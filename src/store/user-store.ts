@@ -12,6 +12,10 @@ interface userObjTypes {
   role: string;
   provider: string;
   owner: string;
+  institute: {
+    duration: string;
+    instituteId: string;
+  };
 }
 
 interface UserState {
