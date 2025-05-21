@@ -1,31 +1,26 @@
 "use server";
-import { cookies } from "next/headers";
 import useFetch from "../../hooks/useFetch";
 
 export default async function getCourses({
-  limit = 10,
+  limit = 15,
   page = 1,
   search = "",
   featured = "",
   category = "",
-  params = "",
+  id = "",
+  sort = 1,
+  level = "",
 }) {
   try {
-    console.log("params", params);
+    console.log("categories", category);
 
-    let token = (await cookies()).get("auth-token")?.value;
-    console.log(limit, page, featured, search, category);
-    let endpoint = params ? "institute-courses" : "courses";
-    params = params ? "/" + params : "";
-    let queries = `?limit=${limit}&page=${page}&search=${search}&featured=${featured}&category=${category}`;
-    console.log("hello=>>>>", endpoint + params + queries);
+    let endpoint = "courses";
+    let queries = `?id=${id}&sort=${sort}&level=${level}&limit=${limit}&page=${page}&search=${search}&featured=${featured}&category=${category}`;
 
     const response = await useFetch({
-      endpoint: endpoint + params + queries,
-      header: {
-        Authorization: `Bearer ${token}`,
-      },
+      endpoint: endpoint + queries,
     });
+    console.log("hello", response);
 
     if (response.success) {
       return {

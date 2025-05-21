@@ -30,12 +30,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-[#0a0f1f] via-[#1b1037] to-[#2a1550] text-white`}
       >
         <div className="flex min-h-screen">
-
           <SidebarProvider>
             <AppSidebar />
             <main className="flex-1 flex flex-col">
               {/* Header */}
-              <header className="bg-gradient-to-r from-[#2e1a47] to-[#4a1d7b] p-5 shadow-md border-b text-white border-white/10 sticky top-0 z-10">
+              <header className="bg-gradient-to-r from-purple-600 to-indigo-600 p-5 shadow-md border-b text-white border-white/10 sticky top-0 z-10">
                 <div className="flex justify-between items-center">
                   <h1 className="text-2xl font-bold tracking-tight">
                     Institute Dashboard
@@ -44,18 +43,21 @@ export default function RootLayout({
               </header>
 
               {/* Main Content */}
-
-              <div className="bg-white/5 m-4 backdrop-blur-sm border border-white/10 shadow-xl rounded-3xl h-[90vh] flex items-center  overflow-y-auto transition-all duration-300">
-
-                {children}
+              <div className="m-3  h-[90vh]  overflow-y-auto transition-all duration-300 relative">
+              {/* bg-white/5  backdrop-blur-sm border border-white/10 
+              shadow-xl w-full py-5 rounded-3xl */}
+                <div
+                  className="relative"
+                >
+                  {children}
+                </div>
               </div>
               {/* Footer */}
-              <footer className="bg-gradient-to-r from-[#2e1a47] to-[#4a1d7b] text-white p-4 text-center">
+              <footer className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4 text-center">
                 <p className="text-sm">
                   © 2025 Edu Master. All rights reserved.
                 </p>
               </footer>
-
             </main>
           </SidebarProvider>
         </div>

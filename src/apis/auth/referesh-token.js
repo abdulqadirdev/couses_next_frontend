@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 
 const setRefereshToken = async () => {
   try {
-    let token = cookies().get("refresh-token")?.value;
+    let token = (await cookies()).get("refresh-token")?.value;
 
     const response = await useFetch({
       endpoint: "referesh-token",
@@ -13,8 +13,6 @@ const setRefereshToken = async () => {
       },
     });
 
-    console.log(response);
-    
 
     if (response.success) {
       (await cookies()).set("auth-token", response.data?.data?.accessToken);

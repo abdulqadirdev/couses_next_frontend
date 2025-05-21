@@ -1,3 +1,4 @@
+import resetSlug from "@/helper/reset-slug";
 import { Course } from "@/store/courses-store";
 import { Award, Calendar, TrendingUp } from "lucide-react";
 import Link from "next/link";
@@ -38,11 +39,11 @@ const CourseCard = ({course}: {course:Course}) => {
           </span>
         </div>
 
-        <div className="relative mb-5 overflow-hidden aspect-video bg-gray-900/50 border border-gray-800/50 group-hover:border-purple-500/30 transition-all duration-300 rounded-xl">
+        <div className="relative mb-5 overflow-hidden aspect-video  bg-gray-900/50 border border-gray-800/50 group-hover:border-purple-500/30 transition-all duration-300 rounded-xl">
           <img
             src={course.image ?? "/placeholder.png"}
             alt={course.title}
-            className="object-contain w-full h-full transform group-hover:scale-110 transition-all duration-700"
+            className="object-contain w-full h-full rounded-lg transform group-hover:scale-110 transition-all duration-700"
           />
           {course.featured && (
             <div className="absolute top-3 right-3 z-20 flex items-center space-x-1 px-3 py-1 rounded-full bg-purple-900/70 backdrop-blur-sm border border-purple-700/50">
@@ -62,7 +63,7 @@ const CourseCard = ({course}: {course:Course}) => {
 
         <div className="mb-2">
           <span className="inline-flex items-center rounded-full bg-purple-900/30 px-2.5 py-0.5 text-xs font-medium text-purple-300 border border-purple-800/30">
-            {course.category && course.category}
+            {course.category && resetSlug(course.category)}
           </span>
         </div>
 

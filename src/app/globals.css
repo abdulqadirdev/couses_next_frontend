@@ -6,6 +6,7 @@ html,
 body {
   all: unset;
   font-family: sans-serif;
+  scroll-behavior: smooth;
 }
 
 @layer base {
@@ -349,11 +350,11 @@ body {
   }
 }
 
-.loader {
+.loader-2 {
   height: 40px;
   width: 40px;
   border-radius: 50%;
-  border: 4px dashed rgb(64, 64, 241);
+  border: 4px dotted rgb(64, 64, 241);
   border-top-color: grey;
   animation: spinner 1s linear infinite;
 }

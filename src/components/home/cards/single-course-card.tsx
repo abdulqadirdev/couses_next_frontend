@@ -1,8 +1,10 @@
+
 import CustomToastMsg from "@/components/toast-message";
 import resetSlug from "@/helper/reset-slug";
 import userStore from "@/store/user-store";
 import { Award, Calendar, ChevronRight, Sparkles } from "lucide-react";
 import Link from "next/link";
+
 import { useState } from "react";
 
 const SingleCourseCard = ({ isLoaded, courseData }: any) => {
@@ -18,6 +20,7 @@ console.log(courseData);
 
   const { user } = userStore();
   const isElgibile = courseData?.createdBy?._id;
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -36,11 +39,13 @@ console.log(courseData);
         <div className="absolute top-1/4 -left-20 w-60 h-60 bg-pink-600 rounded-full opacity-10 blur-3xl"></div>
       </div>
 
+
       {message.message && (
         <CustomToastMsg error={message.error} toastReset={setMessage}>
           {message.message}
         </CustomToastMsg>
       )}
+
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
@@ -127,6 +132,8 @@ console.log(courseData);
               </div>
             </div>
 
+
+
             <div
               className={`transform transition-all duration-700 delay-500 ${
                 isLoaded
@@ -134,6 +141,7 @@ console.log(courseData);
                   : "translate-y-10 opacity-0"
               }`}
             >
+
               {!user ? (
                 <button
                   onClick={() =>
@@ -144,6 +152,7 @@ console.log(courseData);
                   }
                   className="relative overflow-hidden px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 group"
                 >
+
                   <span className="relative z-10 flex items-center justify-center">
                     Enroll Now
                     <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
@@ -152,7 +161,9 @@ console.log(courseData);
                 </button>
               ) : (
                 <Link
+
                   href={`/apply/${isElgibile}` || "#"}
+
                   className="relative inline-block overflow-hidden px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 group"
                 >
                   <span className="relative z-10 flex items-center justify-center">

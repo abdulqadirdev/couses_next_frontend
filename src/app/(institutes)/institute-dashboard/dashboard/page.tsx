@@ -1,5 +1,5 @@
 "use client";
-import { Chart } from "@/components/institute/chart";
+import { Chart } from "@/components/institute/charts/chart";
 import {
   PieChart,
   Pie,

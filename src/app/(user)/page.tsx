@@ -2,17 +2,16 @@
 
 import Banner from "@/components/home/banner";
 import Stats from "@/components/home/stats";
-import FeaturedCourses from "@/components/home/featured-courses";
-import CoursesWithCateories from "@/components/home/courses-categories";
+import FeaturedCourses from "@/components/home/cards/featured-courses";
+import CoursesWithCateories from "@/components/home/cards/courses-categories";
 import Testimonial from "@/components/home/testimonial";
 import NoteSection from "@/components/home/note-section";
 import InstituteCards from "@/components/home/instructor";
+import CategorySection from "@/components/home/home-categories-section";
 
 export default function CoursesLandingPage() {
-
-
   return (
-    <div className="flex min-h-screen flex-col bg-gray-900 text-gray-100">
+    <div>
       {/* hero-banner */}
       <Banner />
 
@@ -20,10 +19,10 @@ export default function CoursesLandingPage() {
       <Stats />
 
       {/* featured Courses */}
-      <FeaturedCourses/>
+      <FeaturedCourses />
 
       {/* courses with categories */}
-      <CoursesWithCateories  />
+      <CategorySection />
 
       {/* Instructor section */}
       <InstituteCards />
@@ -33,7 +32,6 @@ export default function CoursesLandingPage() {
 
       {/* Note Section */}
       <NoteSection />
-
     </div>
   );
 }
