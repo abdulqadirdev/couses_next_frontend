@@ -31,7 +31,7 @@ const Header = (): React.ReactNode => {
   useEffect(() => {
     fetchUser();
   }, []);
-
+  !user?.owner && links[4].label === "Get Institute";
   return (
     <header className="sticky top-0 z-50 w-full bg-gray-900/95 backdrop-blur shadow-md transition-all duration-300">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -76,7 +76,7 @@ const Header = (): React.ReactNode => {
 
         {/* User/Auth Section */}
         <div className="flex items-center gap-4">
-          {!status ? (
+          {status ? (
             <>
               <Link
                 href="/login"
