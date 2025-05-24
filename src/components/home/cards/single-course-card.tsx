@@ -1,10 +1,25 @@
+
+import CustomToastMsg from "@/components/toast-message";
 import resetSlug from "@/helper/reset-slug";
 import userStore from "@/store/user-store";
 import { Award, Calendar, ChevronRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 
+import { useState } from "react";
+
 const SingleCourseCard = ({ isLoaded, courseData }: any) => {
+  interface Message {
+    error: boolean;
+    message: string;
+  }
+  const [message, setMessage] = useState<Message>({
+    error: false,
+    message: "",
+  });
+console.log(courseData);
+
   const { user } = userStore();
+  const isElgibile = courseData?.createdBy?._id;
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -14,6 +29,7 @@ const SingleCourseCard = ({ isLoaded, courseData }: any) => {
       day: "numeric",
     });
   };
+
   return (
     <section className="relative pt-20 pb-16 overflow-hidden mx-8 rounded-t-2xl">
       {/* Background Elements */}
@@ -22,6 +38,14 @@ const SingleCourseCard = ({ isLoaded, courseData }: any) => {
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-600 rounded-full opacity-10 blur-3xl"></div>
         <div className="absolute top-1/4 -left-20 w-60 h-60 bg-pink-600 rounded-full opacity-10 blur-3xl"></div>
       </div>
+
+
+      {message.message && (
+        <CustomToastMsg error={message.error} toastReset={setMessage}>
+          {message.message}
+        </CustomToastMsg>
+      )}
+
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
@@ -108,7 +132,8 @@ const SingleCourseCard = ({ isLoaded, courseData }: any) => {
               </div>
             </div>
 
-            {/* CTA Button */}
+
+
             <div
               className={`transform transition-all duration-700 delay-500 ${
                 isLoaded
@@ -116,8 +141,18 @@ const SingleCourseCard = ({ isLoaded, courseData }: any) => {
                   : "translate-y-10 opacity-0"
               }`}
             >
-              {user ? (
-                <button className="relative overflow-hidden px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 group">
+
+              {!user ? (
+                <button
+                  onClick={() =>
+                    setMessage({
+                      error: true,
+                      message: "Please log in to continue with enrollment.",
+                    })
+                  }
+                  className="relative overflow-hidden px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 group"
+                >
+
                   <span className="relative z-10 flex items-center justify-center">
                     Enroll Now
                     <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
@@ -126,7 +161,9 @@ const SingleCourseCard = ({ isLoaded, courseData }: any) => {
                 </button>
               ) : (
                 <Link
-                  href={courseData?.createdBy?._id || "#"}
+
+                  href={`/apply/${isElgibile}` || "#"}
+
                   className="relative inline-block overflow-hidden px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 group"
                 >
                   <span className="relative z-10 flex items-center justify-center">
