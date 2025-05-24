@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const SingleCourseCard = ({ isLoaded, courseData }: any) => {
   const { user } = userStore();
-  const isElgibile = user?.institute?.instituteId;
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -116,7 +116,7 @@ const SingleCourseCard = ({ isLoaded, courseData }: any) => {
                   : "translate-y-10 opacity-0"
               }`}
             >
-              {isElgibile ? (
+              {user ? (
                 <button className="relative overflow-hidden px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 group">
                   <span className="relative z-10 flex items-center justify-center">
                     Enroll Now
@@ -126,7 +126,7 @@ const SingleCourseCard = ({ isLoaded, courseData }: any) => {
                 </button>
               ) : (
                 <Link
-                  href={isElgibile || "#"}
+                  href={courseData?.createdBy?._id || "#"}
                   className="relative inline-block overflow-hidden px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 group"
                 >
                   <span className="relative z-10 flex items-center justify-center">
